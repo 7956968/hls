@@ -1,0 +1,12 @@
+rb_log.txt
+gtest/
+curl/
+libRb/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+bin/
+cmake_install.cmake
+lib/
+test_results/
+libiwu/
