@@ -1,7 +1,9 @@
 #ifndef HLS_M3U8_COMMENT_H_
 #define HLS_M3U8_COMMENT_H_
 
-#include <hls/m3u8/AElement.h>
+#include "hls/m3u8/AElement.h"
+
+#include <string>
 
 namespace hls {
 

@@ -3,7 +3,7 @@
 
 #include <hls/m3u8/Tag.h>
 
-#include <iwu/StringUtils.h>
+#include "iwu/String_utils.h"
 
 namespace hls {
 
@@ -15,7 +15,7 @@ public:
     }
 
     bool parse(const std::string& value){
-        if(!iwu::StringUtils::isDecimalNumber(value)) {
+        if(!iwu::String_utils::is_decimal_number(value)) {
             return false;
         }
 

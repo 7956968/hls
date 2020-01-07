@@ -8,6 +8,7 @@
 #include <hls/m3u8/Comment.h>
 
 #include <string>
+#include <functional>
 
 namespace hls {
 
@@ -24,12 +25,12 @@ public:
     const AElement* parseLine(const std::string& inLine) override {
         std::string line = inLine;
 
-        line = iwu::StringUtils::trim(line);
+        line = iwu::String_utils::trim(line);
         if(line.empty()) {
             return nullptr;
         }
 
-        if(iwu::StringUtils::startsWith(line, kTAG_PREFIX)) {
+        if(iwu::String_utils::starts_with(line, kTAG_PREFIX)) {
             // Tag
             Tag* tag = parseTag(line);
             if(!tag) {
@@ -68,7 +69,7 @@ public:
 
         // Extract tag name
         std::size_t tagNameEnd = line.find(':');
-        tagNameEnd == std::string::npos ?
+        tagNameEnd = tagNameEnd == std::string::npos ?
             line.size() -1 : tagNameEnd;
 
         const std::string tagName = line.substr(kTAG_PREFIX.size(), tagNameEnd-kTAG_PREFIX.size());

@@ -35,32 +35,17 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wno-unused-function -Wno-unused-variable -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wno-unused-function -Wno-unused-variable -std=c++14")
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Build with symbols
 set(CMAKE_BUILD_TYPE Debug)
 
-###############################################################################
-# Include CURL as external project
-
-ExternalProject_Add(
-    curl_external_project
-    PREFIX curl
-    URL https://curl.haxx.se/download/curl-7.58.0.tar.gz
-    CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/curl/src/curl_external_project//configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/curl --host=mips-linux-gnu CC=${CMAKE_C_COMPILER}
-)
-
-add_library(curl SHARED IMPORTED)
-
-set_target_properties(curl PROPERTIES
-    IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/curl/lib/libcurl.so
-)
-
-add_dependencies(curl curl_external_project)
-
-ExternalProject_Get_Property(curl_external_project source_dir binary_dir)
-
-include_directories("${source_dir}/include")
+# Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ###############################################################################
 # Include Google test as external project
@@ -182,58 +167,31 @@ add_dependencies(libiwu libiwu_external_project)
 
 include_directories(
     ../libiwu/libiwu/include/
+    ../libiwu/external/VA_OPT
+    ../libiwu/external/GSL/include
+    ../libiwu/external/variant
 )
 
 add_dependencies(libiwu libiwu_external_project)
 
+
 ################################################################################
-# Common
+# HLS library
 ########################################
+
+set(HLS_SOURCE_FILES
+    ${LIB_ROOT}/hls/source/m3u8/Parser.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Attribute_list.cpp
+)
 
 include_directories(
-    "${LIB_ROOT}/m3u8/include"
+    "${LIB_ROOT}/hls/include"
 )
 
-################################################################################
-# M3U8 library
-########################################
-
-set(M3U8_SOURCE_FILES
-    ${LIB_ROOT}/m3u8/source/Parser.cpp
-)
-
-# NOTE: To keep libraries isolated should only link against libiwu
-SET(MPD_REQUIRED_LIBRARIES
-    pthread
-    m
-    libiwu
-)
-
-########################################
-# Static
-########################################
 add_library(
-    hlsM3u8_static STATIC
-    ${M3U8_SOURCE_FILES}
+    hls SHARED
+    ${HLS_SOURCE_FILES}
 )
-
-TARGET_LINK_LIBRARIES(hlsM3u8_static
-    ${M3U8_REQUIRED_LIBRARIES}
-)
-
-########################################
-# Shared
-########################################
-add_library(
-    hlsM3u8 SHARED
-    ${M3U8_SOURCE_FILES}
-)
-
-add_executable(
-    hls
-    ${M3U8_SOURCE_FILES}
-)
-
 
 TARGET_LINK_LIBRARIES(hls
     pthread
@@ -247,8 +205,8 @@ TARGET_LINK_LIBRARIES(hls
 set(HLS_TEST_SOURCES
     # Test
     ${LIB_ROOT}/test/source/main.cpp
-    ${LIB_ROOT}/test/source/ATest.cpp
     ${LIB_ROOT}/test/source/TestParser.cpp
+    ${LIB_ROOT}/test/source/TestM3u8AttributeList.cpp
 )
 
 include_directories("${LIB_ROOT}/test/include")
@@ -263,5 +221,5 @@ TARGET_LINK_LIBRARIES(hls_test
     m
     libgtest
     libgmock
-    libiwu
+    hls
 )

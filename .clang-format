@@ -1,0 +1,3 @@
+DisableFormat: 'true'
+# as of version 9, includes are sorted even with DisableFormat enabled
+SortIncludes: 'false'

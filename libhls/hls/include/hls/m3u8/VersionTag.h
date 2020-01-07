@@ -14,11 +14,9 @@ public:
     }
 
 private:
-    VersionTag(int32_t version) : Tag(TagType::X_VERSION), mVersion(version){
+    VersionTag(int32_t version) : Tag(TagType::X_VERSION){
     }
 
-private:
-    int32_t mVersion;
 };
 
 } // m3u8
