@@ -32,7 +32,7 @@ Attribute_list::Container_t Attribute_list::parse(const std::string& input) {
         // Find where the attribute value starts
         const size_t value_start_pos{raw.find('=')};
         Expects(value_start_pos != std::string::npos,
-                Error{"Could not find value start"});
+                Error{"Could not find value start: '"s + raw + "'"s});
 
         // Extract name
         const std::string attr_name{raw.substr(0, value_start_pos)};
@@ -46,7 +46,7 @@ Attribute_list::Container_t Attribute_list::parse(const std::string& input) {
             // TODO Does not support strings with escaped quotes
             const size_t closing_quotes_pos{raw.find('"')};
             Expects(closing_quotes_pos != std::string::npos,
-                    Error{"Could not find closing quotes"});
+                    Error{"Could not find closing quotes: '"s + raw + "'"s});
 
             const std::string value{raw.substr(0, closing_quotes_pos)};
 

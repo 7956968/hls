@@ -13,7 +13,7 @@ class Integer_tag : public Tag {
 public:
     Integer_tag(const std::string& value, Tag::Tag_type type) : Tag{type} {
         Expects(iwu::String_utils::is_decimal_number(value),
-                Error{"Invalid version string: '"s + value + "'"s});
+                Error{"Invalid integer string: '"s + value + "'"s});
 
         m_value = strtoll(value.c_str(), nullptr, 10);
     }

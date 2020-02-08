@@ -1,183 +1,98 @@
-// #include "ATest.h"
+#include "Common.h"
 
-// #include <hls/m3u8/DefaultParserFactory.h>
+#include "hls/Common.h"
+#include "hls/m3u8/Default_parser_factory.h"
 
-// #include <hls/m3u8/IntegerTag.h>
+#include "hls/m3u8/Comment.h"
+#include "hls/m3u8/Integer_tag.h"
+#include "hls/m3u8/Tag.h"
+#include "hls/m3u8/Uri.h"
 
-// class TestParser: public ATest {
-// public:
-//     virtual ~TestParser() {
-//     }
+class TestParser : public ::testing::Test {
+public:
+    static std::unique_ptr<hls::m3u8::IParser> create_parser() {
+        return hls::m3u8::Default_parser_factory{}.create();
+    }
+};
 
-//     std::unique_ptr<hls::m3u8::IParser> createParser() {
-//         return std::unique_ptr<hls::m3u8::IParser>(mFactory.create());
-//     }
+TEST_F(TestParser, Whitespace) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-//     hls::m3u8::DefaultParserFactory mFactory;
-// };
+    ASSERT_THROW(parser->parse_line(""), hls::Error);
+    ASSERT_THROW(parser->parse_line("    "), hls::Error);
+    ASSERT_THROW(parser->parse_line("\n"), hls::Error);
+    ASSERT_THROW(parser->parse_line("\r"), hls::Error);
+    ASSERT_THROW(parser->parse_line("\r\n\r\n   \n"), hls::Error);
+}
 
-// GROUP_TEST_F(Parser, TestParser, Whitespace) {
-//     auto parser = createParser();
+TEST_F(TestParser, Comment) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-//     ASSERT_EQ(parser->parseLine(""), nullptr);
-//     ASSERT_EQ(parser->parseLine("    "), nullptr);
-//     ASSERT_EQ(parser->parseLine("\n"), nullptr);
-//     ASSERT_EQ(parser->parseLine("\r"), nullptr);
-//     ASSERT_EQ(parser->parseLine("\r\n\r\n   \n"), nullptr);
-// }
+    std::unique_ptr<const hls::m3u8::AElement> element{
+      parser->parse_line("# comment body")};
 
-// GROUP_TEST_F(Parser, TestParser, Comment) {
-//     auto parser = createParser();
+    auto comment{dynamic_cast<const hls::m3u8::Comment*>(element.get())};
+    ASSERT_TRUE(comment);
+    ASSERT_EQ(" comment body", comment->body());
+}
 
-//     auto element = std::unique_ptr<const hls::m3u8::AElement>();
+TEST_F(TestParser, EmptyComment) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-//     // Regular comment
-//     element.reset( parser->parseLine("# comment body") );
-//     ASSERT_TRUE(element != nullptr);
-//     ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::COMMENT);
-//     ASSERT_EQ(dynamic_cast<const
-//     hls::m3u8::Comment*>(element.get())->getBody(),
-//         " comment body");
+    std::unique_ptr<const hls::m3u8::AElement> element{parser->parse_line("#")};
 
-//     // Empty comment
-//     element.reset( parser->parseLine("#") );
-//     ASSERT_TRUE(element != nullptr);
-//     ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::COMMENT);
+    auto comment{dynamic_cast<const hls::m3u8::Comment*>(element.get())};
+    ASSERT_TRUE(comment);
+    ASSERT_TRUE(comment->body().empty());
+}
 
-//     ASSERT_EQ(dynamic_cast<const
-//     hls::m3u8::Comment*>(element.get())->getBody(),
-//         "");
-// }
+TEST_F(TestParser, Uri) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-// GROUP_TEST_F(Parser, TestParser, Uri) {
-//     auto parser = createParser();
+    std::unique_ptr<const hls::m3u8::AElement> element{
+      parser->parse_line("https://absolute/uri/address.mp4")};
 
-//     auto element = std::unique_ptr<const hls::m3u8::AElement>();
+    auto uri{dynamic_cast<const hls::m3u8::Uri*>(element.get())};
+    ASSERT_TRUE(uri);
+    ASSERT_EQ(uri->uri(), "https://absolute/uri/address.mp4");
+}
 
-//     // Relative URI
-//     element.reset( parser->parseLine("relative/uri/address.mp4") );
-//     ASSERT_TRUE(element != nullptr);
-//     ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::URI);
-//         ASSERT_EQ(dynamic_cast<const
-//         hls::m3u8::Uri*>(element.get())->getUri(),
-//         "relative/uri/address.mp4");
+TEST_F(TestParser, M3uTag) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-//     // Absolute URI
-//     element.reset( parser->parseLine("https://absolute/uri/address.mp4") );
-//     ASSERT_TRUE(element != nullptr);
-//     ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::URI);
-//         ASSERT_EQ(dynamic_cast<const
-//         hls::m3u8::Uri*>(element.get())->getUri(),
-//         "https://absolute/uri/address.mp4");
-// }
+    std::unique_ptr<const hls::m3u8::AElement> element{
+      parser->parse_line("#EXTM3U")};
 
-// GROUP_TEST_F(Parser, TestParser, M3uTag) {
-//     auto parser = createParser();
+    ASSERT_EQ(element->type(), hls::m3u8::AElement::Type::tag);
 
-//     auto element = std::unique_ptr<const hls::m3u8::AElement>();
+    auto tag{dynamic_cast<const hls::m3u8::Tag*>(element.get())};
+    ASSERT_TRUE(tag);
+    ASSERT_EQ(tag->type(), hls::m3u8::Tag::Tag_type::m3u8);
+}
 
-//     // Relative URI
-//     element.reset( parser->parseLine("#EXTM3U") );
-//     ASSERT_TRUE(element != nullptr);
-//     ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::TAG);
-//         ASSERT_EQ(dynamic_cast<const
-//         hls::m3u8::Tag*>(element.get())->getType(),
-//         hls::m3u8::Tag::TagType::M3U);
-// }
+TEST_F(TestParser, InfTag) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-// GROUP_TEST_F(Parser, TestParser, InfTag) {
-//     auto parser = createParser();
+    std::unique_ptr<const hls::m3u8::AElement> element{
+      parser->parse_line("#EXTINF")};
 
-//     auto element = std::unique_ptr<const hls::m3u8::AElement>();
+    ASSERT_EQ(element->type(), hls::m3u8::AElement::Type::tag);
 
-//     // Relative URI
-//     element.reset( parser->parseLine("#EXTINF") );
-//     ASSERT_TRUE(element != nullptr);
-//     ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::TAG);
-//         ASSERT_EQ(dynamic_cast<const
-//         hls::m3u8::Tag*>(element.get())->getType(),
-//         hls::m3u8::Tag::TagType::INF);
-// }
+    auto tag{dynamic_cast<const hls::m3u8::Tag*>(element.get())};
+    ASSERT_TRUE(tag);
+    ASSERT_EQ(tag->type(), hls::m3u8::Tag::Tag_type::inf);
+}
 
-// GROUP_TEST_F(Parser, TestParser, AttributeList) {
-//     hls::m3u8::AttributeList al;
+TEST_F(TestParser, TargetDurationTag) {
+    std::unique_ptr<hls::m3u8::IParser> parser{create_parser()};
 
-//     ASSERT_EQ(hls::Status::OK, al.fromString(
-//         "string_key=\"test string value\""
-//         ",decimal_key=42,float_key=4.2,bool_key=YES"
-//         ",resolution_key=120x320,enum_key=ENUM_VALUE"
-//     ));
+    std::unique_ptr<const hls::m3u8::AElement> element{
+      parser->parse_line("#EXT-X-TARGETDURATION:42")};
 
-//     ASSERT_EQ(al.getAttributes().size(), 6U);
+    ASSERT_EQ(element->type(), hls::m3u8::AElement::Type::tag);
 
-//     std::string strValue;
-//     EXPECT_TRUE(al.getString("string_key", &strValue));
-//     EXPECT_EQ(strValue, "test string value");
-
-//     int64_t decValue;
-//     EXPECT_TRUE(al.getInteger("decimal_key", &decValue));
-//     EXPECT_EQ(decValue, 42);
-
-//     float floatValue;
-//     EXPECT_TRUE(al.getFloat("float_key", &floatValue));
-//     EXPECT_FLOAT_EQ(floatValue, 4.2);
-
-//     bool boolValue;
-//     EXPECT_TRUE(al.getBoolEnum("bool_key", &boolValue));
-//     EXPECT_EQ(boolValue, true);
-
-//     std::pair<int32_t, int32_t> resolution;
-//     EXPECT_TRUE(al.getResolution("resolution_key", &resolution));
-//     EXPECT_EQ(resolution.first, 120);
-//     EXPECT_EQ(resolution.second, 320);
-
-//     EXPECT_TRUE(al.getEnumString("enum_key", &strValue));
-//     EXPECT_EQ(strValue, "ENUM_VALUE");
-
-
-// }
-
-// GROUP_TEST_F(Parser, TestParser, TargetDuration) {
-//     auto parser = createParser();
-
-//     auto element = std::unique_ptr<const hls::m3u8::AElement>();
-
-//     {
-//         // Correct value
-//         element.reset( parser->parseLine("#EXT-X-TARGETDURATION:42") );
-//         ASSERT_TRUE(element != nullptr);
-//         ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::TAG);
-//             ASSERT_EQ(dynamic_cast<const
-//             hls::m3u8::Tag*>(element.get())->getType(),
-//             hls::m3u8::Tag::TagType::X_TARGET_DURATION);
-
-//         ASSERT_EQ(element->getType(), hls::m3u8::AElement::Type::TAG);
-//             ASSERT_EQ(dynamic_cast<const
-//             hls::m3u8::IntegerTag*>(element.get())->getValue(),
-//                 42);
-//     }
-
-//     {
-//         // No value
-//         element.reset( parser->parseLine("#EXT-X-TARGETDURATION:") );
-//         ASSERT_TRUE(element == nullptr);
-//     }
-
-//     {
-//         // Invalid value
-//         element.reset( parser->parseLine("#EXT-X-TARGETDURATION:asdf") );
-//         ASSERT_TRUE(element == nullptr);
-//     }
-
-//     {
-//         // Invalid value
-//         element.reset( parser->parseLine("#EXT-X-TARGETDURATION:42.3") );
-//         ASSERT_TRUE(element == nullptr);
-//     }
-
-//     {
-//         // Invalid value
-//         element.reset( parser->parseLine("#EXT-X-TARGETDURATION:0x42") );
-//         ASSERT_TRUE(element == nullptr);
-//     }
-// }
+    auto tag{dynamic_cast<const hls::m3u8::Integer_tag*>(element.get())};
+    ASSERT_TRUE(tag);
+    ASSERT_EQ(tag->type(), hls::m3u8::Tag::Tag_type::x_target_duration);
+    ASSERT_EQ(tag->value(), 42);
+}

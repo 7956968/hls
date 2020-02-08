@@ -67,3 +67,10 @@ TEST_F(TestM3u8AttributeList, MultipleAttributes) {
     ASSERT_EQ(al.get<hls::m3u8::Attribute_list::String_enum>("enum_key").value,
               "ENUM_VALUE"s);
 }
+
+TEST_F(TestM3u8AttributeList, Contains) {
+    const hls::m3u8::Attribute_list al{"integer_key=42"};
+
+    ASSERT_TRUE(al.contains("integer_key"));
+    ASSERT_FALSE(al.contains("asdf"));
+}

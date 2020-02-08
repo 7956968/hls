@@ -23,7 +23,7 @@ public:
 
     Tag(Tag_type type) : AElement{AElement::Type::tag}, m_type{type} {}
 
-    Tag_type getType() const { return m_type; }
+    Tag_type type() const { return m_type; }
 
 private:
     Tag_type m_type{Tag_type::unknown};
