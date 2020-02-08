@@ -106,5 +106,9 @@ Attribute_list::Container_t Attribute_list::parse(const std::string& input) {
     return fields;
 }
 
+bool Attribute_list::contains(const std::string& name) const {
+    return m_fields.find(name) != m_fields.cend();
+}
+
 } // namespace m3u8
 } // namespace hls

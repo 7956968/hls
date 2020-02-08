@@ -1,4 +1,5 @@
-
+#ifndef HLS_M3U8ATTRIBUTELIST_H_
+#define HLS_M3U8ATTRIBUTELIST_H_
 
 #include "hls/Common.h"
 
@@ -57,6 +58,8 @@ public:
         throw Error{"Invalid bool value '"s + str.value + "'"s};
     }
 
+    bool contains(const std::string& name) const;
+
 private:
     /**
      * @brief Parse a raw input string
@@ -71,3 +74,5 @@ private:
 
 } // namespace m3u8
 } // namespace hls
+
+#endif
