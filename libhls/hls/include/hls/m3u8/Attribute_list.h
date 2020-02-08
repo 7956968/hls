@@ -44,6 +44,19 @@ public:
         return mpark::get<T>(get(name));
     }
 
+    template<>
+    bool get(const std::string& name) const {
+        const auto str{get<String_enum>(name)};
+
+        if (str.value == "YES") {
+            return true;
+        } else if (str.value == "NO") {
+            return false;
+        }
+
+        throw Error{"Invalid bool value '"s + str.value + "'"s};
+    }
+
 private:
     /**
      * @brief Parse a raw input string

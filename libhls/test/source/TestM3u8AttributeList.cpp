@@ -37,6 +37,16 @@ TEST_F(TestM3u8AttributeList, EnumString) {
               "ENUM_VALUE"s);
 }
 
+TEST_F(TestM3u8AttributeList, Boolean) {
+    const hls::m3u8::Attribute_list al{
+      "bool_key_true=YES,bool_key_false=NO,bool_key_invalid=apple"};
+
+    ASSERT_TRUE(al.get<bool>("bool_key_true"));
+    ASSERT_FALSE(al.get<bool>("bool_key_false"));
+
+    ASSERT_THROW(al.get<bool>("bool_key_invalid"), hls::Error);
+}
+
 TEST_F(TestM3u8AttributeList, Empty) { const hls::m3u8::Attribute_list al{""}; }
 
 TEST_F(TestM3u8AttributeList, Invalid) {
