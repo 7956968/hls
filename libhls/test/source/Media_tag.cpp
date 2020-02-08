@@ -21,11 +21,11 @@ constexpr auto k_type_audio{"AUDIO"};
 constexpr auto k_type_closed_captions{"CLOSED_CAPTIONS"};
 constexpr auto k_type_subtitles{"SUBTITLES"};
 
-const std::map<std::string, hls::m3u8::MediaTag::Type> k_type_map{
-  {k_type_audio, hls::m3u8::MediaTag::Type::audio},
-  {k_type_video, hls::m3u8::MediaTag::Type::video},
-  {k_type_closed_captions, hls::m3u8::MediaTag::Type::closed_captions},
-  {k_type_subtitles, hls::m3u8::MediaTag::Type::subtitles},
+const std::map<std::string, hls::m3u8::Media_tag::Type> k_type_map{
+  {k_type_audio, hls::m3u8::Media_tag::Type::audio},
+  {k_type_video, hls::m3u8::Media_tag::Type::video},
+  {k_type_closed_captions, hls::m3u8::Media_tag::Type::closed_captions},
+  {k_type_subtitles, hls::m3u8::Media_tag::Type::subtitles},
 };
 
 } // namespace
@@ -33,7 +33,7 @@ const std::map<std::string, hls::m3u8::MediaTag::Type> k_type_map{
 namespace hls {
 namespace m3u8 {
 
-MediaTag::MediaTag(const std::string& value) : Tag{Tag::Tag_type::x_media} {
+Media_tag::Media_tag(const std::string& value) : Tag{Tag::Tag_type::x_media} {
     const Attribute_list al{value};
 
     const std::string type{

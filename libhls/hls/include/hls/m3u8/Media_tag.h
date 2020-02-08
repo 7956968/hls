@@ -1,5 +1,5 @@
-#ifndef HLS_M3U8_MEDIATAG_H_
-#define HLS_M3U8_MEDIATAG_H_
+#ifndef HLS_M3U8_Media_tag_H_
+#define HLS_M3U8_Media_tag_H_
 
 #include "hls/m3u8/Attribute_list.h"
 #include "hls/m3u8/Tag.h"
@@ -7,11 +7,11 @@
 namespace hls {
 namespace m3u8 {
 
-class MediaTag : public Tag {
+class Media_tag : public Tag {
 public:
     enum class Type { audio, video, subtitles, closed_captions, unknown };
 
-    explicit MediaTag(const std::string& value);
+    explicit Media_tag(const std::string& value);
 
 private:
     Type m_type{Type::unknown};
