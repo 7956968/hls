@@ -1,10 +1,13 @@
 #!/bin/bash
 
 main() {
-    python3 ../libiwu/scripts/test_runner.py \
-        --binaries bin/dash_test_core bin/dash_test_mpd \
+    local root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+    python3 ${root}/../libiwu/scripts/test_runner.py \
+        --binaries ${root}/build/bin/hls_test \
         --valgrind \
-        --repeat 1
+        --repeat 1 \
+        "$@"
 }
 
 main "$@"
