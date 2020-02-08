@@ -182,6 +182,7 @@ add_dependencies(libiwu libiwu_external_project)
 set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Parser.cpp
     ${LIB_ROOT}/hls/source/m3u8/Attribute_list.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Stream_inf_tag.cpp
 )
 
 include_directories(
