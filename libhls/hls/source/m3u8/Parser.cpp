@@ -18,34 +18,64 @@ namespace m3u8 {
 
 
 Parser::Parser() {
+    // Basic tags
+    register_tag_type("M3U", Tag::Tag_type::m3u8)
+      .register_integer_tag_type("-X-VERSION", Tag::Tag_type::x_version);
+
+    // Media segment tags
+    register_tag_type("INF", Tag::Tag_type::inf)
+      .register_tag_type("X-BYTERANGE", Tag::Tag_type::x_byte_range)
+      .register_tag_type("X-DISCONTINUITY", Tag::Tag_type::x_discontinuity)
+      .register_tag_type("X-KEY", Tag::Tag_type::x_key)
+      .register_tag_type("X-MAP ", Tag::Tag_type::x_map)
+      .register_tag_type("X-PROGRAM-DATE-TIME",
+                         Tag::Tag_type::x_program_date_time)
+      .register_tag_type("X-GAP", Tag::Tag_type::x_gap)
+      .register_tag_type("X-BITRATE", Tag::Tag_type::x_bitrate);
+
+
+    // Media metadata tags
+    register_tag_type("X-DATERANGE", Tag::Tag_type::x_date_range);
+
+    // Media playlist tags
+    register_tag_type("X-TARGETDURATION", Tag::Tag_type::x_target_duration)
+      .register_tag_type("X-MEDIA-SEQUENCE", Tag::Tag_type::x_media_sequence)
+      .register_tag_type("X-DISCONTINUITY-SEQUENCE",
+                         Tag::Tag_type::x_discontinuity_sequence)
+      .register_tag_type("X-ENDLIST", Tag::Tag_type::x_end_list)
+      .register_tag_type("X-PLAYLIST-TYPE", Tag::Tag_type::x_playlist_type)
+      .register_tag_type("X-I-FRAMES-ONLY", Tag::Tag_type::x_i_frames_only);
+
+
     // Master playlist tags
     register_specialized_tag_type<Media_tag>("-X-MEDIA", Tag::Tag_type::x_media)
       .register_specialized_tag_type<Stream_inf_tag>(
-        "-X-STREAM-INF", Tag::Tag_type::x_stream_inf);
+        "-X-STREAM-INF", Tag::Tag_type::x_stream_inf)
+      .register_tag_type("X-I-FRAME-STREAM-INF",
+                         Tag::Tag_type::x_i_frame_stream_inf)
+      .register_tag_type("X-SESSION-DATA", Tag::Tag_type::x_session_data)
+      .register_tag_type("X-SESSION-KEY", Tag::Tag_type::x_session_key);
 
-    // TODO
-    // . EXT-X-I-FRAME-STREAM-INF ..................33                  4.3.4.4.
-    // EXT-X-SESSION-DATA ........................34                  4.3.4.5.
-    // EXT-X-SESSION-KEY
-
-    // Register tags
-    register_tag_type("M3U", Tag::Tag_type::m3u8)
-      .register_tag_type("INF", Tag::Tag_type::inf)
-      .register_tag_type("-X-ENDLIST", Tag::Tag_type::x_end_list)
-      .register_integer_tag_type("-X-VERSION", Tag::Tag_type::x_version)
-      .register_integer_tag_type("-X-MEDIA-SEQUENCE",
-                                 Tag::Tag_type::x_media_sequence)
-      .register_integer_tag_type("-X-TARGETDURATION",
-                                 Tag::Tag_type::x_target_duration);
+    // Media or master playlist tags
+    register_tag_type("X-INDEPENDENT-SEGMENTS",
+                      Tag::Tag_type::x_independent_segments)
+      .register_tag_type("X-START", Tag::Tag_type::x_start)
+      .register_tag_type("X-DEFINE", Tag::Tag_type::x_define);
 }
 
 std::unique_ptr<const AElement> Parser::parse_line(const std::string& in_line) {
-    std::string line{in_line};
+    // Trim left whitespace
+    std::string line{iwu::String_utils::left_trim(in_line)};
 
-    line = iwu::String_utils::trim(line);
-    Expects(!line.empty(), Error{"Empty input"});
+    // Trim right new lines
+    auto new_line_chars{[](char c) {
+        return c == '\n' || c == '\r';
+    }};
+    line = iwu::String_utils::right_trim(line, new_line_chars);
 
-    if (iwu::String_utils::starts_with(line, k_tag_prefix)) {
+    if (line.empty()) {
+        return nullptr;
+    } else if (iwu::String_utils::starts_with(line, k_tag_prefix)) {
         // Tag
         return parse_tag(line);
     } else if (iwu::String_utils::starts_with(line, k_comment_prefix)) {
@@ -55,8 +85,6 @@ std::unique_ptr<const AElement> Parser::parse_line(const std::string& in_line) {
         // Uri
         return std::make_unique<Uri>(line);
     }
-
-    return nullptr;
 }
 
 
