@@ -30,6 +30,10 @@ struct Error : public iwu::Error {
     using iwu::Error::Error;
 };
 
+struct End_of_stream : public Error {
+    using Error::Error;
+};
+
 } // namespace hls
 
 #endif
