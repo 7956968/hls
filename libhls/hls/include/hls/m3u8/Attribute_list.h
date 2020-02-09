@@ -12,6 +12,8 @@ namespace m3u8 {
 
 class Attribute_list {
 public:
+    enum class Bool_enum { yes, no };
+
     using Resolution = std::pair<long, long>;
 
     struct String_enum {
@@ -47,15 +49,12 @@ public:
 
     template<>
     bool get(const std::string& name) const {
-        const auto str{get<String_enum>(name)};
-
-        if (str.value == "YES") {
+        switch (get_parsed_enum_string(s_bool_parser, name)) {
+        case Bool_enum::yes:
             return true;
-        } else if (str.value == "NO") {
+        case Bool_enum::no:
             return false;
         }
-
-        throw Error{"Invalid bool value '"s + str.value + "'"s};
     }
 
     template<typename T>
@@ -80,6 +79,8 @@ private:
 
 private:
     Container_t m_fields;
+
+    static std::function<Bool_enum(const std::string&)> s_bool_parser;
 };
 
 } // namespace m3u8

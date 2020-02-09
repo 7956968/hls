@@ -1,9 +1,19 @@
 
 
 #include "hls/m3u8/Attribute_list.h"
+#include "hls/m3u8/Common.h"
 
 namespace hls {
 namespace m3u8 {
+
+std::function<Attribute_list::Bool_enum(const std::string&)>
+  Attribute_list::s_bool_parser{[](const std::string& name) {
+      return parse_enum_string(
+        std::map<std::string, Attribute_list::Bool_enum>{
+          {"YES", Bool_enum::yes}, {"NO", Bool_enum::no}},
+        name);
+  }};
+
 
 Attribute_list::Attribute_list(const std::string& input)
     : m_fields{parse(input)} {}
