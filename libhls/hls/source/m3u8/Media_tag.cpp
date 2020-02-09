@@ -1,5 +1,6 @@
 #include "hls/m3u8/Media_tag.h"
 #include "hls/Common.h"
+#include "hls/m3u8/Common.h"
 
 namespace {
 
@@ -16,46 +17,97 @@ constexpr auto k_attr_in_stream_id{"INSTREAM-ID"};
 constexpr auto k_attr_characteristics{"CHARACTERISTICS"};
 constexpr auto k_attr_channels{"CHANNELS"};
 
-constexpr auto k_type_video{"VIDEO"};
-constexpr auto k_type_audio{"AUDIO"};
-constexpr auto k_type_closed_captions{"CLOSED_CAPTIONS"};
-constexpr auto k_type_subtitles{"SUBTITLES"};
-
-const std::map<std::string, hls::m3u8::Media_tag::Type> k_type_map{
-  {k_type_audio, hls::m3u8::Media_tag::Type::audio},
-  {k_type_video, hls::m3u8::Media_tag::Type::video},
-  {k_type_closed_captions, hls::m3u8::Media_tag::Type::closed_captions},
-  {k_type_subtitles, hls::m3u8::Media_tag::Type::subtitles},
-};
-
 } // namespace
 
 namespace hls {
 namespace m3u8 {
 
+std::function<Media_tag::Media_type(const std::string&)>
+  Media_tag::s_media_type_parser{[](const std::string& name) {
+      return hls::m3u8::parse_enum_string(
+        std::map<std::string, Media_tag::Media_type>{
+          {"AUDIO", Media_type::audio},
+          {"VIDEO", Media_type::video},
+          {"CLOSED-CAPTIONS", Media_type::closed_captions},
+          {"SUBTITLES", Media_type::subtitles}},
+        name);
+  }};
+
 Media_tag::Media_tag(const std::string& value) : Tag{Tag::Tag_type::x_media} {
     const Attribute_list al{value};
 
-    const std::string type{
-      al.get<Attribute_list::String_enum>(k_attr_type).value};
-
-    auto type_iter{k_type_map.find(type)};
-    Expects(type_iter != k_type_map.cend(),
-            Error{"Unsupported type: '"s + type + "'"s});
-    m_type = type_iter->second;
-
-    m_uri = al.get<std::string>(k_attr_uri);
+    // Mandatory attributes
+    m_media_type = al.get_parsed_enum_string(s_media_type_parser, k_attr_type);
     m_group_id = al.get<std::string>(k_attr_group_id);
-    m_language = al.get<std::string>(k_attr_language);
-    m_assoc_language = al.get<std::string>(k_attr_assoc_language);
     m_name = al.get<std::string>(k_attr_name);
-    m_default = al.get<bool>(k_attr_default);
-    m_auto_select = al.get<bool>(k_attr_auto_select);
-    m_forced = al.get<bool>(k_attr_forced);
 
-    m_in_stream_id = al.get<std::string>(k_attr_in_stream_id);
-    m_characteristics = al.get<std::string>(k_attr_characteristics);
-    m_channels = al.get<std::string>(k_attr_channels);
+    // Optional attributes
+    if (al.contains(k_attr_uri)) {
+        m_uri = al.get<std::string>(k_attr_uri);
+    }
+
+    if (al.contains(k_attr_language)) {
+        m_language = al.get<std::string>(k_attr_language);
+    }
+
+    if (al.contains(k_attr_assoc_language)) {
+        m_assoc_language = al.get<std::string>(k_attr_assoc_language);
+    }
+
+    if (al.contains(k_attr_default)) {
+        m_default = al.get<bool>(k_attr_default);
+    }
+
+    if (al.contains(k_attr_auto_select)) {
+        m_auto_select = al.get<bool>(k_attr_auto_select);
+    }
+
+    if (al.contains(k_attr_forced)) {
+        m_forced = al.get<bool>(k_attr_forced);
+    }
+
+    if (al.contains(k_attr_in_stream_id)) {
+        m_in_stream_id = al.get<std::string>(k_attr_in_stream_id);
+    }
+
+    if (al.contains(k_attr_characteristics)) {
+        m_characteristics =
+          al.get_delim_separated_string(k_attr_characteristics, ","s);
+    }
+
+    if (al.contains(k_attr_channels)) {
+        m_channels = al.get_delim_separated_string(k_attr_channels, "/"s);
+    }
+}
+
+Media_tag::Media_type Media_tag::media_type() const { return m_media_type; }
+
+const std::string& Media_tag::uri() const { return m_uri; }
+
+const std::string& Media_tag::group_id() const { return m_group_id; }
+
+const std::string& Media_tag::language() const { return m_language; }
+
+const std::string& Media_tag::assoc_language() const {
+    return m_assoc_language;
+}
+
+const std::string& Media_tag::name() const { return m_name; }
+
+bool Media_tag::is_default() const { return m_default; }
+
+bool Media_tag::auto_select() const { return m_auto_select; }
+
+bool Media_tag::forced() const { return m_forced; }
+
+const std::string& Media_tag::in_stream_id() const { return m_in_stream_id; }
+
+const std::vector<std::string>& Media_tag::characteristics() const {
+    return m_characteristics;
+}
+
+const std::vector<std::string>& Media_tag::channels() const {
+    return m_channels;
 }
 
 } // namespace m3u8

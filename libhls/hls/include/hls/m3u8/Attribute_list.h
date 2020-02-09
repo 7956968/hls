@@ -65,7 +65,8 @@ public:
         return parser(raw);
     }
 
-    std::vector<std::string> get_csv_string(const std::string& name) const;
+    std::vector<std::string> get_delim_separated_string(
+      const std::string& name, const std::string& delim) const;
 
     bool contains(const std::string& name) const;
 

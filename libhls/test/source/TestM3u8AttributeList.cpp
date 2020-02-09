@@ -80,7 +80,8 @@ TEST_F(TestM3u8AttributeList, CSV) {
     const hls::m3u8::Attribute_list al{"csv_key=\"first,second,third\""};
 
 
-    std::vector<std::string> values{al.get_csv_string("csv_key")};
+    std::vector<std::string> values{
+      al.get_delim_separated_string("csv_key"s, ","s)};
     ASSERT_EQ(3, values.size());
 
     ASSERT_EQ(values[0], "first");

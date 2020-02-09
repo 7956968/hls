@@ -120,13 +120,11 @@ bool Attribute_list::contains(const std::string& name) const {
     return m_fields.find(name) != m_fields.cend();
 }
 
-std::vector<std::string> Attribute_list::get_csv_string(
-  const std::string& name) const {
-    const std::string raw{get<std::string>(name)};
-
+std::vector<std::string> Attribute_list::get_delim_separated_string(
+  const std::string& name, const std::string& delim) const {
     std::vector<std::string> values;
 
-    iwu::String_utils::split(raw, ",", values);
+    iwu::String_utils::split(get<std::string>(name), delim, values);
 
     return values;
 }

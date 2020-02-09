@@ -51,7 +51,7 @@ Stream_inf_tag::Stream_inf_tag(const std::string& value)
     }
 
     if (al.contains(k_attr_codecs)) {
-        m_codecs = al.get_csv_string(k_attr_codecs);
+        m_codecs = al.get_delim_separated_string(k_attr_codecs, ",");
     }
 
     if (al.contains(k_attr_resolution)) {
@@ -68,7 +68,7 @@ Stream_inf_tag::Stream_inf_tag(const std::string& value)
     }
 
     if (al.contains(k_attr_allowed_cpc)) {
-        m_allowed_cpc = al.get_csv_string(k_attr_allowed_cpc);
+        m_allowed_cpc = al.get_delim_separated_string(k_attr_allowed_cpc, ",");
     }
 
     if (al.contains(k_attr_video_range)) {

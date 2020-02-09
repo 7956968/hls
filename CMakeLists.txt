@@ -154,6 +154,7 @@ ExternalProject_Add(libiwu_external_project
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../libiwu
     INSTALL_COMMAND ""
     DOWNLOAD_COMMAND ""
+    BUILD_ALWAYS 1
     CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
 )
 
@@ -211,6 +212,8 @@ set(HLS_TEST_SOURCES
     ${LIB_ROOT}/test/source/TestParser.cpp
     ${LIB_ROOT}/test/source/TestM3u8AttributeList.cpp
     ${LIB_ROOT}/test/source/TestStreamInfTag.cpp
+    ${LIB_ROOT}/test/source/TestIntegerTag.cpp
+    ${LIB_ROOT}/test/source/TestMediaTag.cpp
 )
 
 include_directories("${LIB_ROOT}/test/include")
