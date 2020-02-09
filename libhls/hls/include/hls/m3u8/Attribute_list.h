@@ -58,6 +58,16 @@ public:
         throw Error{"Invalid bool value '"s + str.value + "'"s};
     }
 
+    template<typename T>
+    T get_parsed_enum_string(std::function<T(const std::string& name)>& parser,
+                             const std::string& name) const {
+        const std::string raw{get<String_enum>(name).value};
+
+        return parser(raw);
+    }
+
+    std::vector<std::string> get_csv_string(const std::string& name) const;
+
     bool contains(const std::string& name) const;
 
 private:

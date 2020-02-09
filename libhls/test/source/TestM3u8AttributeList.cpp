@@ -74,3 +74,16 @@ TEST_F(TestM3u8AttributeList, Contains) {
     ASSERT_TRUE(al.contains("integer_key"));
     ASSERT_FALSE(al.contains("asdf"));
 }
+
+
+TEST_F(TestM3u8AttributeList, CSV) {
+    const hls::m3u8::Attribute_list al{"csv_key=\"first,second,third\""};
+
+
+    std::vector<std::string> values{al.get_csv_string("csv_key")};
+    ASSERT_EQ(3, values.size());
+
+    ASSERT_EQ(values[0], "first");
+    ASSERT_EQ(values[1], "second");
+    ASSERT_EQ(values[2], "third");
+}

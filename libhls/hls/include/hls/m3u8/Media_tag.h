@@ -7,6 +7,13 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief  The EXT-X-MEDIA tag is used to relate Media Playlists that contain
+ * alternative Renditions (Section 4.3.4.2.1) of the same content. For example,
+ * three EXT-X-MEDIA tags can be used to identify audio-only   Media Playlists
+ * that contain English, French, and Spanish Renditions   of the same
+ * presentation (source rfc8216)
+ */
 class Media_tag : public Tag {
 public:
     enum class Type { audio, video, subtitles, closed_captions, unknown };

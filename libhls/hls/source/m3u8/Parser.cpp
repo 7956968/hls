@@ -18,6 +18,16 @@ namespace m3u8 {
 
 
 Parser::Parser() {
+    // Master playlist tags
+    register_specialized_tag_type<Media_tag>("-X-MEDIA", Tag::Tag_type::x_media)
+      .register_specialized_tag_type<Stream_inf_tag>(
+        "-X-STREAM-INF", Tag::Tag_type::x_stream_inf);
+
+    // TODO
+    // . EXT-X-I-FRAME-STREAM-INF ..................33                  4.3.4.4.
+    // EXT-X-SESSION-DATA ........................34                  4.3.4.5.
+    // EXT-X-SESSION-KEY
+
     // Register tags
     register_tag_type("M3U", Tag::Tag_type::m3u8)
       .register_tag_type("INF", Tag::Tag_type::inf)
@@ -26,11 +36,7 @@ Parser::Parser() {
       .register_integer_tag_type("-X-MEDIA-SEQUENCE",
                                  Tag::Tag_type::x_media_sequence)
       .register_integer_tag_type("-X-TARGETDURATION",
-                                 Tag::Tag_type::x_target_duration)
-      .register_specialized_tag_type<Media_tag>("-X-MEDIA",
-                                                Tag::Tag_type::x_media)
-      .register_specialized_tag_type<Stream_inf_tag>(
-        "-X-STREAM-IN", Tag::Tag_type::x_stream_inf);
+                                 Tag::Tag_type::x_target_duration);
 }
 
 std::unique_ptr<const AElement> Parser::parse_line(const std::string& in_line) {
