@@ -171,6 +171,7 @@ include_directories(
     ../libiwu/external/VA_OPT
     ../libiwu/external/GSL/include
     ../libiwu/external/variant
+    ../libiwu/external/optional
 )
 
 add_dependencies(libiwu libiwu_external_project)

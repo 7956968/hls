@@ -18,48 +18,57 @@ TEST_F(TestStreamInfTag, AverageBandwidth) {
     {
         const hls::m3u8::Stream_inf_tag tag{
           "BANDWIDTH=0,AVERAGE-BANDWIDTH=12345"};
-        ASSERT_EQ(12345, tag.average_bandwidth());
+
+        ASSERT_EQ(12345, tag.average_bandwidth().value());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_EQ(-1, tag.average_bandwidth());
+        ASSERT_FALSE(tag.average_bandwidth());
     }
 }
 
 TEST_F(TestStreamInfTag, Codecs) {
-    const hls::m3u8::Stream_inf_tag tag{
-      "BANDWIDTH=0,CODECS=\"mp4a.40.2,avc1.4d401e\""};
+    {
+        const hls::m3u8::Stream_inf_tag tag{
+          "BANDWIDTH=0,CODECS=\"mp4a.40.2,avc1.4d401e\""};
 
-    std::vector<std::string> codecs{tag.codecs()};
+        std::vector<std::string> codecs{tag.codecs().value()};
 
-    ASSERT_EQ(codecs.size(), 2);
+        ASSERT_EQ(codecs.size(), 2);
 
-    ASSERT_EQ(codecs[0], "mp4a.40.2");
-    ASSERT_EQ(codecs[1], "avc1.4d401e");
+        ASSERT_EQ(codecs[0], "mp4a.40.2");
+        ASSERT_EQ(codecs[1], "avc1.4d401e");
+    }
+
+    {
+        const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
+
+        ASSERT_FALSE(tag.codecs());
+    }
 }
 
 TEST_F(TestStreamInfTag, Resolution) {
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_EQ(std::make_pair(-1L, -1L), tag.resolution());
+        ASSERT_FALSE(tag.resolution());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0,RESOLUTION=1280x720"};
-        ASSERT_EQ(std::make_pair(1280L, 720L), tag.resolution());
+        ASSERT_EQ(std::make_pair(1280L, 720L), tag.resolution().value());
     }
 }
 
 TEST_F(TestStreamInfTag, FrameRate) {
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_FLOAT_EQ(-1.0, tag.frame_rate());
+        ASSERT_FALSE(tag.frame_rate());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0,FRAME-RATE=3.14"};
-        ASSERT_FLOAT_EQ(3.14, tag.frame_rate());
+        ASSERT_FLOAT_EQ(3.14, tag.frame_rate().value());
     }
 }
 
@@ -67,25 +76,24 @@ TEST_F(TestStreamInfTag, HdcpLevel) {
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0,HDCP-LEVEL=TYPE-0"};
         ASSERT_EQ(hls::m3u8::Stream_inf_tag::Hdcp_level::type_0,
-                  tag.hdcp_level());
+                  tag.hdcp_level().value());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0,HDCP-LEVEL=TYPE-1"};
         ASSERT_EQ(hls::m3u8::Stream_inf_tag::Hdcp_level::type_1,
-                  tag.hdcp_level());
+                  tag.hdcp_level().value());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0,HDCP-LEVEL=TYPE-NONE"};
         ASSERT_EQ(hls::m3u8::Stream_inf_tag::Hdcp_level::none,
-                  tag.hdcp_level());
+                  tag.hdcp_level().value());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_EQ(hls::m3u8::Stream_inf_tag::Hdcp_level::not_set,
-                  tag.hdcp_level());
+        ASSERT_FALSE(tag.hdcp_level());
     }
 
     ASSERT_THROW(hls::m3u8::Stream_inf_tag{"BANDWIDTH=0,HDCP-LEVEL=asdf"},
@@ -97,7 +105,7 @@ TEST_F(TestStreamInfTag, AllowedCpc) {
       "BANDWIDTH=0,ALLOWED-CPC=\"com.example.drm1:SMART-TV/"
       "PC,com.example.drm2: HW\""};
 
-    std::vector<std::string> codecs{tag.allowed_cpc()};
+    std::vector<std::string> codecs{tag.allowed_cpc().value()};
 
     ASSERT_EQ(codecs.size(), 2);
 
@@ -120,8 +128,7 @@ TEST_F(TestStreamInfTag, VideoRange) {
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_EQ(hls::m3u8::Stream_inf_tag::Video_range::not_set,
-                  tag.video_range());
+        ASSERT_FALSE(tag.video_range());
     }
 
 
@@ -137,7 +144,7 @@ TEST_F(TestStreamInfTag, Video) {
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_TRUE(tag.video().empty());
+        ASSERT_FALSE(tag.video());
     }
 }
 
@@ -149,7 +156,7 @@ TEST_F(TestStreamInfTag, Audio) {
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_TRUE(tag.audio().empty());
+        ASSERT_FALSE(tag.audio());
     }
 }
 
@@ -163,20 +170,25 @@ TEST_F(TestStreamInfTag, Subtitles) {
 
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
-        ASSERT_TRUE(tag.subtitles().empty());
+        ASSERT_FALSE(tag.subtitles());
     }
 }
 
 TEST_F(TestStreamInfTag, ClosedCaptions) {
     {
         const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0,CLOSED-CAPTIONS=NONE"};
-        ASSERT_EQ(std::make_pair(false, ""s), tag.closed_captions());
+        ASSERT_EQ(std::make_pair(false, ""s), tag.closed_captions().value());
     }
 
     {
         const hls::m3u8::Stream_inf_tag tag{
           "BANDWIDTH=0,CLOSED-CAPTIONS=\"closed_captions\""};
         ASSERT_EQ(std::make_pair(true, "closed_captions"s),
-                  tag.closed_captions());
+                  tag.closed_captions().value());
+    }
+
+    {
+        const hls::m3u8::Stream_inf_tag tag{"BANDWIDTH=0"};
+        ASSERT_FALSE(tag.closed_captions());
     }
 }

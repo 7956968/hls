@@ -5,6 +5,8 @@
 #include "iwu/backport/Language_support.h"
 
 #include <gsl/gsl>
+#include <optional.hpp>
+
 #undef Expects
 #undef Ensures
 #define IWU_CONTRACT_ALWAYS_THROW 1

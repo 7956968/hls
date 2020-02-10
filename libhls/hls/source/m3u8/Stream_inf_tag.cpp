@@ -14,7 +14,7 @@ constexpr auto k_attr_audio{"AUDIO"};
 constexpr auto k_attr_video{"VIDEO"};
 constexpr auto k_attr_subtitles{"SUBTITLES"};
 constexpr auto k_attr_closed_captions{"CLOSED-CAPTIONS"};
-
+constexpr auto k_attr_closed_captions_none{"NONE"};
 } // namespace
 
 namespace hls {
@@ -93,45 +93,61 @@ Stream_inf_tag::Stream_inf_tag(const std::string& value)
             m_closed_captions = {true,
                                  al.get<std::string>(k_attr_closed_captions)};
         } catch (const mpark::bad_variant_access&) {
-            m_closed_captions = {false, ""};
+            const Attribute_list::String_enum str_enum{
+              al.get<Attribute_list::String_enum>(k_attr_closed_captions)};
+
+            Expects(str_enum.value == k_attr_closed_captions_none);
+
+            m_closed_captions = {false, ""s};
         }
     }
 }
 
+
 long Stream_inf_tag::bandwidth() const { return m_bandwidth; }
 
-long Stream_inf_tag::average_bandwidth() const { return m_average_bandwidth; }
+nonstd::optional<long> Stream_inf_tag::average_bandwidth() const {
+    return m_average_bandwidth;
+}
 
-const std::vector<std::string>& Stream_inf_tag::codecs() const {
+nonstd::optional<std::vector<std::string>> Stream_inf_tag::codecs() const {
     return m_codecs;
 }
 
-Attribute_list::Resolution Stream_inf_tag::resolution() const {
+nonstd::optional<Attribute_list::Resolution>
+Stream_inf_tag::resolution() const {
     return m_resolution;
 }
 
-float Stream_inf_tag::frame_rate() const { return m_frame_rate; }
+nonstd::optional<float> Stream_inf_tag::frame_rate() const {
+    return m_frame_rate;
+}
 
 
-Stream_inf_tag::Hdcp_level Stream_inf_tag::hdcp_level() const {
+nonstd::optional<Stream_inf_tag::Hdcp_level>
+Stream_inf_tag::hdcp_level() const {
     return m_hdcp_level;
 }
 
-const std::vector<std::string>& Stream_inf_tag::allowed_cpc() const {
+nonstd::optional<std::vector<std::string>> Stream_inf_tag::allowed_cpc() const {
     return m_allowed_cpc;
 }
 
-Stream_inf_tag::Video_range Stream_inf_tag::video_range() const {
+nonstd::optional<Stream_inf_tag::Video_range>
+Stream_inf_tag::video_range() const {
     return m_video_range;
 }
 
-const std::string& Stream_inf_tag::audio() const { return m_audio; }
+nonstd::optional<std::string> Stream_inf_tag::audio() const { return m_audio; }
 
-const std::string& Stream_inf_tag::video() const { return m_video; }
+nonstd::optional<std::string> Stream_inf_tag::video() const { return m_video; }
 
-const std::string& Stream_inf_tag::subtitles() const { return m_subtitles; }
+nonstd::optional<std::string> Stream_inf_tag::subtitles() const {
+    return m_subtitles;
+}
 
-const std::pair<bool, std::string> Stream_inf_tag::closed_captions() const {
+nonstd::optional<std::pair<bool, std::string>>
+Stream_inf_tag::closed_captions() const {
     return m_closed_captions;
 }
 

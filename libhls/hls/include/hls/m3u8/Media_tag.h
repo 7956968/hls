@@ -4,6 +4,8 @@
 #include "hls/m3u8/Attribute_list.h"
 #include "hls/m3u8/Tag.h"
 
+#include <optional.hpp>
+
 namespace hls {
 namespace m3u8 {
 
@@ -16,7 +18,7 @@ namespace m3u8 {
  */
 class Media_tag : public Tag {
 public:
-    enum class Media_type { audio, video, subtitles, closed_captions, not_set };
+    enum class Media_type { audio, video, subtitles, closed_captions };
 
     explicit Media_tag(const std::string& value);
 
@@ -29,7 +31,7 @@ public:
      * @brief The value is a quoted-string containing a URI that identifies the
      * Media Playlist file [RFC8216]
      */
-    const std::string& uri() const;
+    nonstd::optional<std::string> uri() const;
 
     /**
      * @brief The value is a quoted-string that specifies the group to which the
@@ -42,14 +44,14 @@ public:
      * for Identifying Languages [RFC5646], which identifies the primary
      * language used in the Rendition [RFC8216]
      */
-    const std::string& language() const;
+    nonstd::optional<std::string> language() const;
 
     /**
      * @brief The value is a quoted-string containing a language tag [RFC5646]
      * that identifies a language that is associated with the Rendition
      * [RFC8216]
      */
-    const std::string& assoc_language() const;
+    nonstd::optional<std::string> assoc_language() const;
 
     /**
      * @brief The value is a quoted-string containing a human-readable
@@ -82,14 +84,14 @@ public:
      * @brief The value is a quoted-string that specifies a Rendition within the
      * segments in the Media Playlist [RFC8216]
      */
-    const std::string& in_stream_id() const;
+    nonstd::optional<std::string> in_stream_id() const;
 
     /**
      * @brief Contains one or more Uniform Media_type
      * Identifiers [UTI]. Each UTI indicates an individual
      * characteristic of the Rendition [RFC8216]
      */
-    const std::vector<std::string>& characteristics() const;
+    nonstd::optional<std::vector<std::string>> characteristics() const;
 
     /**
      * @brief If the Media_type attribute is AUDIO, then the first parameter is
@@ -102,21 +104,21 @@ public:
      * Rendition. This parameter is a comma-separated list of Audio
      * Object Coding Identifiers  [RFC8216]
      */
-    const std::vector<std::string>& channels() const;
+    nonstd::optional<std::vector<std::string>> channels() const;
 
 private:
-    Media_type m_media_type{Media_type::not_set};
-    std::string m_uri;
+    Media_type m_media_type;
     std::string m_group_id;
-    std::string m_language;
-    std::string m_assoc_language;
     std::string m_name;
+    nonstd::optional<std::string> m_uri;
+    nonstd::optional<std::string> m_language;
+    nonstd::optional<std::string> m_assoc_language;
     bool m_default{false};
     bool m_auto_select{false};
     bool m_forced{false};
-    std::string m_in_stream_id;
-    std::vector<std::string> m_characteristics;
-    std::vector<std::string> m_channels;
+    nonstd::optional<std::string> m_in_stream_id;
+    nonstd::optional<std::vector<std::string>> m_characteristics;
+    nonstd::optional<std::vector<std::string>> m_channels;
 
 private:
     static std::function<Media_type(const std::string&)> s_media_type_parser;

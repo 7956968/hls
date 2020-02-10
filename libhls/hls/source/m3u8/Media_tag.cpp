@@ -82,13 +82,13 @@ Media_tag::Media_tag(const std::string& value) : Tag{Tag::Tag_type::x_media} {
 
 Media_tag::Media_type Media_tag::media_type() const { return m_media_type; }
 
-const std::string& Media_tag::uri() const { return m_uri; }
+nonstd::optional<std::string> Media_tag::uri() const { return m_uri; }
 
 const std::string& Media_tag::group_id() const { return m_group_id; }
 
-const std::string& Media_tag::language() const { return m_language; }
+nonstd::optional<std::string> Media_tag::language() const { return m_language; }
 
-const std::string& Media_tag::assoc_language() const {
+nonstd::optional<std::string> Media_tag::assoc_language() const {
     return m_assoc_language;
 }
 
@@ -100,13 +100,15 @@ bool Media_tag::auto_select() const { return m_auto_select; }
 
 bool Media_tag::forced() const { return m_forced; }
 
-const std::string& Media_tag::in_stream_id() const { return m_in_stream_id; }
+nonstd::optional<std::string> Media_tag::in_stream_id() const {
+    return m_in_stream_id;
+}
 
-const std::vector<std::string>& Media_tag::characteristics() const {
+nonstd::optional<std::vector<std::string>> Media_tag::characteristics() const {
     return m_characteristics;
 }
 
-const std::vector<std::string>& Media_tag::channels() const {
+nonstd::optional<std::vector<std::string>> Media_tag::channels() const {
     return m_channels;
 }
 

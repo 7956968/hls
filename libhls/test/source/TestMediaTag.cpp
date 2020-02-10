@@ -67,38 +67,38 @@ TEST_F(TestMediaTag, Name) {
 }
 
 TEST_F(TestMediaTag, Uri) {
-    ASSERT_TRUE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
-                  .uri()
-                  .empty());
+    ASSERT_FALSE(
+      hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}.uri());
 
     ASSERT_EQ(
       hls::m3u8::Media_tag{
         "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"G\",NAME=\"N\",URI=\"uri\""}
-        .uri(),
+        .uri()
+        .value(),
       "uri"s);
 }
 
 TEST_F(TestMediaTag, Language) {
-    ASSERT_TRUE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
-                  .language()
-                  .empty());
+    ASSERT_FALSE(
+      hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}.language());
 
     ASSERT_EQ(
       hls::m3u8::Media_tag{
         "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"G\",NAME=\"N\",LANGUAGE=\"eng\""}
-        .language(),
+        .language()
+        .value(),
       "eng"s);
 }
 
 TEST_F(TestMediaTag, AssocLanguage) {
-    ASSERT_TRUE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
-                  .assoc_language()
-                  .empty());
+    ASSERT_FALSE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
+                   .assoc_language());
 
     ASSERT_EQ(
       hls::m3u8::Media_tag{
         "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"G\",NAME=\"N\",ASSOC-LANGUAGE=\"eng\""}
-        .assoc_language(),
+        .assoc_language()
+        .value(),
       "eng"s);
 }
 
@@ -142,26 +142,26 @@ TEST_F(TestMediaTag, Forced) {
 }
 
 TEST_F(TestMediaTag, InStreamId) {
-    ASSERT_TRUE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
-                  .in_stream_id()
-                  .empty());
+    ASSERT_FALSE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
+                   .in_stream_id());
 
     ASSERT_EQ(
       hls::m3u8::Media_tag{
         "TYPE=CLOSED-CAPTIONS,GROUP-ID=\"G\",NAME=\"N\",INSTREAM-ID=\"isid\""}
-        .in_stream_id(),
+        .in_stream_id()
+        .value(),
       "isid"s);
 }
 
 TEST_F(TestMediaTag, Characteristics) {
-    ASSERT_TRUE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
-                  .characteristics()
-                  .empty());
+    ASSERT_FALSE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
+                   .characteristics());
 
     std::vector<std::string> characteristics{
       hls::m3u8::Media_tag{"TYPE=CLOSED-CAPTIONS,GROUP-ID=\"G\",NAME="
                            "\"N\",CHARACTERISTICS=\"one,two,three\""}
-        .characteristics()};
+        .characteristics()
+        .value()};
     ASSERT_EQ(characteristics.size(), 3);
     ASSERT_EQ(characteristics[0], "one");
     ASSERT_EQ(characteristics[1], "two");
@@ -169,14 +169,14 @@ TEST_F(TestMediaTag, Characteristics) {
 }
 
 TEST_F(TestMediaTag, Channels) {
-    ASSERT_TRUE(hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}
-                  .channels()
-                  .empty());
+    ASSERT_FALSE(
+      hls::m3u8::Media_tag{"TYPE=VIDEO,NAME=\"N\",GROUP-ID=\"G\""}.channels());
 
     std::vector<std::string> channels{
       hls::m3u8::Media_tag{"TYPE=CLOSED-CAPTIONS,GROUP-ID=\"G\",NAME="
                            "\"N\",CHANNELS=\"one/two/three\""}
-        .channels()};
+        .channels()
+        .value()};
     ASSERT_EQ(channels.size(), 3);
     ASSERT_EQ(channels[0], "one");
     ASSERT_EQ(channels[1], "two");
