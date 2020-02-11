@@ -2,6 +2,7 @@
 #define HLS_M3U8_STREAMINFTAG_H_
 
 #include "hls/m3u8/Attribute_list.h"
+#include "hls/m3u8/Media_tag.h"
 #include "hls/m3u8/Tag.h"
 
 namespace hls {
@@ -113,6 +114,9 @@ public:
      */
     nonstd::optional<std::string> subtitles() const;
 
+    nonstd::optional<std::string> get_rendition_group_id(
+      Media_tag::Media_type type) const;
+
     /**
      * @brief The value can be either a quoted-string or an enumerated-string
      * with the value NONE. If the value is a quoted-string, it MUST
@@ -120,9 +124,6 @@ public:
      * elsewhere in the Playlist whose TYPE attribute is CLOSED-CAPTIONS,
      * and it indicates the set of closed-caption Renditions that can be
      * used when playing the presentation.
-     *
-     * @return {false, ""} if the value is set to NONE, {true, GROUP_ID value}
-     * otherwise
      */
     nonstd::optional<std::pair<bool, std::string>> closed_captions() const;
 

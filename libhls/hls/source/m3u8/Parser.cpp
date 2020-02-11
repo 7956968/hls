@@ -33,7 +33,6 @@ Parser::Parser() {
       .register_tag_type("X-GAP", Tag::Tag_type::x_gap)
       .register_tag_type("X-BITRATE", Tag::Tag_type::x_bitrate);
 
-
     // Media metadata tags
     register_tag_type("X-DATERANGE", Tag::Tag_type::x_date_range);
 
@@ -45,7 +44,6 @@ Parser::Parser() {
       .register_tag_type("X-ENDLIST", Tag::Tag_type::x_end_list)
       .register_tag_type("X-PLAYLIST-TYPE", Tag::Tag_type::x_playlist_type)
       .register_tag_type("X-I-FRAMES-ONLY", Tag::Tag_type::x_i_frames_only);
-
 
     // Master playlist tags
     register_specialized_tag_type<Media_tag>("-X-MEDIA", Tag::Tag_type::x_media)

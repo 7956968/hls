@@ -151,5 +151,22 @@ Stream_inf_tag::closed_captions() const {
     return m_closed_captions;
 }
 
+nonstd::optional<std::string> Stream_inf_tag::get_rendition_group_id(
+  Media_tag::Media_type type) const {
+    switch (type) {
+    case Media_tag::Media_type::audio:
+        return m_audio;
+    case Media_tag::Media_type::video:
+        return m_video;
+    case Media_tag::Media_type::subtitles:
+        return m_subtitles;
+    case Media_tag::Media_type::closed_captions:
+        if (!m_closed_captions || !m_closed_captions->first) {
+            return nonstd::nullopt;
+        }
+        return m_closed_captions->second;
+    }
+}
+
 } // namespace m3u8
 } // namespace hls
