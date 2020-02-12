@@ -36,6 +36,10 @@ struct End_of_stream : public Error {
     using Error::Error;
 };
 
+struct Parse_error : public Error {
+    using Error::Error;
+};
+
 } // namespace hls
 
 #endif

@@ -12,10 +12,6 @@ namespace playlist {
 
 class Master_playlist_parser {
 public:
-    struct Parse_error : public Error {
-        using Error::Error;
-    };
-
     explicit Master_playlist_parser(m3u8::IElement_stream* stream)
         : m_stream{stream} {}
 

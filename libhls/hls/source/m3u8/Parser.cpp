@@ -37,10 +37,12 @@ Parser::Parser() {
     register_tag_type("-X-DATERANGE", Tag::Tag_type::x_date_range);
 
     // Media playlist tags
-    register_tag_type("-X-TARGETDURATION", Tag::Tag_type::x_target_duration)
-      .register_tag_type("-X-MEDIA-SEQUENCE", Tag::Tag_type::x_media_sequence)
-      .register_tag_type("-X-DISCONTINUITY-SEQUENCE",
-                         Tag::Tag_type::x_discontinuity_sequence)
+    register_integer_tag_type("-X-TARGETDURATION",
+                              Tag::Tag_type::x_target_duration)
+      .register_integer_tag_type("-X-MEDIA-SEQUENCE",
+                                 Tag::Tag_type::x_media_sequence)
+      .register_integer_tag_type("-X-DISCONTINUITY-SEQUENCE",
+                                 Tag::Tag_type::x_discontinuity_sequence)
       .register_tag_type("-X-ENDLIST", Tag::Tag_type::x_end_list)
       .register_tag_type("-X-I-FRAMES-ONLY", Tag::Tag_type::x_i_frames_only)
       .register_enum_tag("-X-PLAYLIST-TYPE", Tag::Tag_type::x_playlist_type,

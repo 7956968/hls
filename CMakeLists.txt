@@ -218,6 +218,7 @@ set(HLS_TEST_SOURCES
     ${LIB_ROOT}/test/source/TestMediaTag.cpp
     ${LIB_ROOT}/test/source/TestPlaylistParser.cpp
     ${LIB_ROOT}/test/source/TestMasterPlaylist.cpp
+    ${LIB_ROOT}/test/source/TestMediaPlaylist.cpp
 )
 
 include_directories("${LIB_ROOT}/test/include")

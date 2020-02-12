@@ -22,9 +22,7 @@ public:
     }
 };
 
-TEST_F(TestMasterPlaylist, Empty) {
-    ASSERT_THROW(parse(""), hls::playlist::Master_playlist_parser::Parse_error);
-}
+TEST_F(TestMasterPlaylist, Empty) { ASSERT_THROW(parse(""), hls::Parse_error); }
 
 TEST_F(TestMasterPlaylist, Basic) {
     std::unique_ptr<hls::playlist::Master_playlist> pl{
