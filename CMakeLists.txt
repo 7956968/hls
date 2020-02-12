@@ -212,7 +212,6 @@ TARGET_LINK_LIBRARIES(hls
 # Test
 
 set(HLS_TEST_SOURCES
-    # Test
     ${LIB_ROOT}/test/source/main.cpp
     ${LIB_ROOT}/test/source/TestParser.cpp
     ${LIB_ROOT}/test/source/TestM3u8AttributeList.cpp
@@ -227,14 +226,30 @@ set(HLS_TEST_SOURCES
 include_directories("${LIB_ROOT}/test/include")
 
 add_executable(
-    hls_test
+    hls-test
     ${HLS_TEST_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(hls_test
+TARGET_LINK_LIBRARIES(hls-test
     pthread
     m
     libgtest
     libgmock
     hls
 )
+
+#############################################################################
+# CLI
+
+add_executable(
+    hls-cli
+    ${LIB_ROOT}/cli/source/main.cpp
+)
+
+TARGET_LINK_LIBRARIES(hls-cli
+    pthread
+    m
+    hls
+)
+
+

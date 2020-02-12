@@ -125,6 +125,20 @@ private:
 };
 
 } // namespace m3u8
+
+inline std::string to_string(m3u8::Media_tag::Media_type type) {
+    switch (type) {
+    case m3u8::Media_tag::Media_type::audio:
+        return "m3u8::Media_tag::Media_type::audio"s;
+    case m3u8::Media_tag::Media_type::video:
+        return "m3u8::Media_tag::Media_type::video"s;
+    case m3u8::Media_tag::Media_type::subtitles:
+        return "m3u8::Media_tag::Media_type::subtitles"s;
+    case m3u8::Media_tag::Media_type::closed_captions:
+        return "m3u8::Media_tag::Media_type::closed_captions"s;
+    }
+}
+
 } // namespace hls
 
 #endif

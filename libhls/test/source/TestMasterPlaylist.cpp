@@ -18,7 +18,7 @@ public:
       const std::string& input) {
         auto stream{create_stream(input)};
 
-        return hls::playlist::Master_playlist_parser{stream.get()}.parse();
+        return hls::playlist::Master_playlist_parser{stream.get()}.parse(""s);
     }
 };
 
@@ -43,8 +43,7 @@ TEST_F(TestMasterPlaylist, Basic) {
     ASSERT_EQ(streams[1]->stream_inf().bandwidth(), 2560000);
 }
 
-
-TEST_F(TestMasterPlaylist, AlternativeAudio) {
+TEST_F(TestMasterPlaylist, AlternateAudio) {
     std::unique_ptr<hls::playlist::Master_playlist> pl{parse(
       "#EXTM3U\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aac\",NAME=\"English\",DEFAULT=YES,"
@@ -54,9 +53,7 @@ TEST_F(TestMasterPlaylist, AlternativeAudio) {
       "#EXT-X-STREAM-INF:BANDWIDTH=1280000,AUDIO=\"aac\"\n"
       "low/video-only.m3u8\n"
       "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"mp4a.40.5\",AUDIO=\"aac\"\n"
-      "main/english-audio.m3u8\n"
-
-      )};
+      "main/english-audio.m3u8\n")};
 
     std::vector<const hls::playlist::IVariant_stream*> streams{pl->streams()};
 
@@ -88,4 +85,29 @@ TEST_F(TestMasterPlaylist, AlternativeAudio) {
 
         ASSERT_EQ(media.size(), 2);
     }
+}
+
+TEST_F(TestMasterPlaylist, AlternateVideo) {
+    std::unique_ptr<hls::playlist::Master_playlist> pl{parse(
+      // clang-format off
+"#EXTM3U\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"low\",NAME=\"Main\",DEFAULT=YES,URI=\"low/main/audio-video.m3u8\"\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"low\",NAME=\"Centerfield\",DEFAULT=NO,URI=\"low/centerfield/audio-video.m3u8\"\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"low\",NAME=\"Dugout\",DEFAULT=NO,URI=\"low/dugout/audio-video.m3u8\"\n"
+"#EXT-X-STREAM-INF:BANDWIDTH=1280000,CODECS=\"...\",VIDEO=\"low\"\n"
+"low/main/audio-video.m3u8\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"mid\",NAME=\"Main\",DEFAULT=YES,URI=\"mid/main/audio-video.m3u8\"\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"mid\",NAME=\"Centerfield\",DEFAULT=NO,URI=\"mid/centerfield/audio-video.m3u8\"\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"mid\",NAME=\"Dugout\",DEFAULT=NO,URI=\"mid/dugout/audio-video.m3u8\"\n"
+"#EXT-X-STREAM-INF:BANDWIDTH=2560000,CODECS=\"...\",VIDEO=\"mid\"\n"
+"mid/main/audio-video.m3u8\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"hi\",NAME=\"Main\",DEFAULT=YES,URI=\"hi/main/audio-video.m3u8\"\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"hi\",NAME=\"Centerfield\",DEFAULT=NO,URI=\"hi/centerfield/audio-video.m3u8\"\n"
+"#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"hi\",NAME=\"Dugout\",DEFAULT=NO,URI=\"hi/dugout/audio-video.m3u8\"\n"
+"#EXT-X-STREAM-INF:BANDWIDTH=7680000,CODECS=\"...\",VIDEO=\"hi\"\n"
+"hi/main/audio-video.m3u8\n"
+      // clang-format on
+      )};
+
+    std::vector<const hls::playlist::IVariant_stream*> streams{pl->streams()};
 }

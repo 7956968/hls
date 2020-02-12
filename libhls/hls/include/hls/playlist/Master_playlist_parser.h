@@ -15,8 +15,8 @@ public:
     explicit Master_playlist_parser(m3u8::IElement_stream* stream)
         : m_stream{stream} {}
 
-    std::unique_ptr<Master_playlist> parse() {
-        auto playlist{std::make_unique<Master_playlist>()};
+    std::unique_ptr<Master_playlist> parse(const std::string& uri) {
+        auto playlist{std::make_unique<Master_playlist>(uri)};
 
         while (true) {
             std::shared_ptr<const m3u8::AElement> element;

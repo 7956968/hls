@@ -5,6 +5,7 @@
 #include "hls/m3u8/Stream_inf_tag.h"
 #include "hls/m3u8/Uri.h"
 
+#include "hls/playlist/APlaylist.h"
 #include "hls/playlist/IRendition_group.h"
 #include "hls/playlist/IVariant_stream.h"
 
@@ -13,7 +14,7 @@
 namespace hls {
 namespace playlist {
 
-class Master_playlist {
+class Master_playlist : public APlaylist {
 public:
     /**
      * @brief A set of one or more EXT-X-MEDIA tags with the same GROUP-ID value
@@ -80,6 +81,8 @@ public:
     };
 
 public:
+    explicit Master_playlist(const std::string& uri) : APlaylist{uri} {}
+
     void add_variant(std::shared_ptr<const m3u8::Stream_inf_tag> stream_inf,
                      std::shared_ptr<const m3u8::Uri> uri) {
         Expects(stream_inf);

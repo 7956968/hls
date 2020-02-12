@@ -28,6 +28,10 @@ public:
         x_date_range,
 
         // Media playlist tags
+
+        /**
+         * @brief EXT-X-TARGETDURATION [RFC82216/4.4.4.1]
+         */
         x_target_duration,
         x_media_sequence,
         x_discontinuity_sequence,
@@ -65,7 +69,7 @@ inline std::string to_string(m3u8::Tag::Tag_type type) {
     case m3u8::Tag::Tag_type::m3u8:
         return "m3u8::Tag::Tag_type::m3u8"s;
     case m3u8::Tag::Tag_type::x_version:
-        return "m3u8::Tag::Tag_type::"s;
+        return "m3u8::Tag::Tag_type::x_version"s;
     case m3u8::Tag::Tag_type::inf:
         return "m3u8::Tag::Tag_type::Tag_type"s;
     case m3u8::Tag::Tag_type::x_byte_range:
