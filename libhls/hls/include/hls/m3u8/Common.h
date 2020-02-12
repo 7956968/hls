@@ -8,6 +8,15 @@
 namespace hls {
 namespace m3u8 {
 
+
+enum class Playlist_type { event, vod };
+
+
+template<typename T>
+using Enum_parser_fnc = std::function<T(const std::string&)>;
+
+const Enum_parser_fnc<Playlist_type>& get_playlist_type_parser();
+
 template<typename T>
 T parse_enum_string(const std::map<std::string, T>& name_map,
                     const std::string& name) {

@@ -187,6 +187,7 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Stream_inf_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Default_parser_factory.cpp
     ${LIB_ROOT}/hls/source/m3u8/Media_tag.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Common.cpp
 )
 
 include_directories(
@@ -213,7 +214,7 @@ set(HLS_TEST_SOURCES
     ${LIB_ROOT}/test/source/TestParser.cpp
     ${LIB_ROOT}/test/source/TestM3u8AttributeList.cpp
     ${LIB_ROOT}/test/source/TestStreamInfTag.cpp
-    ${LIB_ROOT}/test/source/TestIntegerTag.cpp
+    ${LIB_ROOT}/test/source/TestTags.cpp
     ${LIB_ROOT}/test/source/TestMediaTag.cpp
     ${LIB_ROOT}/test/source/TestPlaylistParser.cpp
     ${LIB_ROOT}/test/source/TestMasterPlaylist.cpp

@@ -89,3 +89,16 @@ TEST_F(TestParser, Tag) {
 
     ASSERT_THROW(stream->get_next(), hls::End_of_stream);
 }
+
+TEST_F(TestParser, EnumTag) {
+    std::unique_ptr<hls::m3u8::Parser_element_stream> stream{
+      create_stream("#EXT-X-PLAYLIST-TYPE:EVENT")};
+
+    std::unique_ptr<const hls::m3u8::AElement> element{stream->get_next()};
+    auto tag{dynamic_cast<const hls::m3u8::Tag*>(element.get())};
+
+    ASSERT_TRUE(tag);
+
+
+    ASSERT_THROW(stream->get_next(), hls::End_of_stream);
+}
