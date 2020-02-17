@@ -3,6 +3,7 @@
 
 #include "hls/m3u8/Common.h"
 #include "hls/m3u8/Enum_tag.h"
+#include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
 
 class TestTags : public ::testing::Test {};
@@ -57,4 +58,30 @@ TEST_F(TestTags, EnumTag) {
                    "three", hls::m3u8::Tag::Tag_type::unknown, test_enum_parser}
                     .value()),
                  hls::Error);
+}
+
+TEST_F(TestTags, InfTag) {
+    EXPECT_DOUBLE_EQ(5, hls::m3u8::Inf_tag{"5"}.duration());
+
+    EXPECT_DOUBLE_EQ(5.45, hls::m3u8::Inf_tag{"5.45"}.duration());
+
+    EXPECT_THROW(hls::m3u8::Inf_tag{""}.duration(), hls::Parse_error);
+    EXPECT_THROW(hls::m3u8::Inf_tag{"asdf"}.duration(), hls::Parse_error);
+    EXPECT_THROW(hls::m3u8::Inf_tag{",title"}.duration(), hls::Parse_error);
+
+    EXPECT_DOUBLE_EQ(5, hls::m3u8::Inf_tag{"5,"}.duration());
+
+    {
+        hls::m3u8::Inf_tag tag{"5,title"};
+
+        EXPECT_DOUBLE_EQ(tag.duration(), 5);
+        EXPECT_EQ("title"s, tag.title().value());
+    }
+
+    {
+        hls::m3u8::Inf_tag tag{"5,"};
+
+        EXPECT_DOUBLE_EQ(tag.duration(), 5);
+        EXPECT_EQ(""s, tag.title().value());
+    }
 }

@@ -187,6 +187,7 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Stream_inf_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Default_parser_factory.cpp
     ${LIB_ROOT}/hls/source/m3u8/Media_tag.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Inf_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Common.cpp
 )
 
