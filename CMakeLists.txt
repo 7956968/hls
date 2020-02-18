@@ -189,6 +189,8 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Media_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Inf_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Common.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Byte_range.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Map_tag.cpp
 )
 
 include_directories(

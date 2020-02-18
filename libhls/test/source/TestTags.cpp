@@ -1,10 +1,12 @@
 
 #include "Common.h"
 
+#include "hls/m3u8/Byte_range.h"
 #include "hls/m3u8/Common.h"
 #include "hls/m3u8/Enum_tag.h"
 #include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
+#include "hls/m3u8/Map_tag.h"
 
 class TestTags : public ::testing::Test {};
 
@@ -83,5 +85,50 @@ TEST_F(TestTags, InfTag) {
 
         EXPECT_DOUBLE_EQ(tag.duration(), 5);
         EXPECT_EQ(""s, tag.title().value());
+    }
+}
+
+// TODO Move to a separate file ?
+TEST_F(TestTags, ByteRange) {
+    ASSERT_THROW(hls::m3u8::Byte_range{""}, iwu::Precondition_violation);
+    ASSERT_THROW(hls::m3u8::Byte_range{"asdf"}, iwu::Precondition_violation);
+    ASSERT_THROW(hls::m3u8::Byte_range{"@"}, iwu::Precondition_violation);
+    ASSERT_THROW(hls::m3u8::Byte_range{"@345"}, iwu::Precondition_violation);
+    ASSERT_THROW(hls::m3u8::Byte_range{"123123@"}, iwu::Precondition_violation);
+    ASSERT_THROW(hls::m3u8::Byte_range{"asdf@123"},
+                 iwu::Precondition_violation);
+    ASSERT_THROW(hls::m3u8::Byte_range{"123@asdf"},
+                 iwu::Precondition_violation);
+
+
+    {
+        hls::m3u8::Byte_range br{"42"};
+
+        ASSERT_EQ(42, br.length());
+        ASSERT_FALSE(br.start_byte().has_value());
+    }
+
+    {
+        hls::m3u8::Byte_range br{"42@1234"};
+
+        ASSERT_EQ(42, br.length());
+        ASSERT_EQ(1234, br.start_byte().value());
+    }
+}
+
+TEST_F(TestTags, MapTag) {
+    ASSERT_ANY_THROW(hls::m3u8::Map_tag{""});
+
+    {
+        hls::m3u8::Map_tag tag{"URI=\"http://test\""};
+        ASSERT_EQ(tag.uri(), "http://test");
+        ASSERT_FALSE(tag.byte_range().has_value());
+    }
+
+    {
+        hls::m3u8::Map_tag tag{"URI=\"http://test\",BYTERANGE=\"1234@52\""};
+        ASSERT_EQ(tag.uri(), "http://test");
+        ASSERT_EQ(tag.byte_range().value().length(), 1234);
+        ASSERT_EQ(tag.byte_range().value().start_byte(), 52);
     }
 }
