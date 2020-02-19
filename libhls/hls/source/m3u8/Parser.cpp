@@ -1,5 +1,6 @@
 #include "hls/m3u8/Parser.h"
 #include "hls/Common.h"
+#include "hls/m3u8/Byte_range_tag.h"
 #include "hls/m3u8/Comment.h"
 #include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
@@ -25,7 +26,8 @@ Parser::Parser() {
 
     // Media segment tags
     register_specialized_tag_type<Inf_tag>("INF", Tag::Tag_type::inf)
-      .register_tag_type("-X-BYTERANGE", Tag::Tag_type::x_byte_range)
+      .register_specialized_tag_type<Byte_range_tag>(
+        "-X-BYTERANGE", Tag::Tag_type::x_byte_range)
       .register_tag_type("-X-DISCONTINUITY", Tag::Tag_type::x_discontinuity)
       .register_tag_type("-X-KEY", Tag::Tag_type::x_key)
       .register_tag_type("-X-MAP ", Tag::Tag_type::x_map)
