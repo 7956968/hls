@@ -3,7 +3,7 @@
 #include "hls/m3u8/String_line_reader.h"
 #include "hls/playlist/Master_playlist_parser.h"
 
-#include "Common.h"
+#include "iwu/test/Test_common.h"
 
 class TestMasterPlaylist : public ::testing::Test {
 public:

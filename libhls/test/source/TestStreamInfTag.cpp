@@ -1,7 +1,7 @@
 
-#include "Common.h"
-
 #include "hls/m3u8/Stream_inf_tag.h"
+
+#include "iwu/test/Test_common.h"
 
 class TestStreamInfTag : public ::testing::Test {};
 

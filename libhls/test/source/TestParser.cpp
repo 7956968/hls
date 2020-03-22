@@ -1,5 +1,3 @@
-#include "Common.h"
-
 #include "hls/Common.h"
 #include "hls/m3u8/Comment.h"
 #include "hls/m3u8/Default_parser_factory.h"
@@ -9,6 +7,7 @@
 #include "hls/m3u8/Tag.h"
 #include "hls/m3u8/Uri.h"
 
+#include "iwu/test/Test_common.h"
 
 class TestParser : public ::testing::Test {
 public:

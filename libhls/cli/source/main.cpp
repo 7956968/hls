@@ -158,7 +158,6 @@ private:
 int main() {
     // Enable library logging
     iwu::Log::set_level(iwu::Log::Level::verbose);
-    DLOGE("@# wot wot");
 
     Cli_app{}.run();
 

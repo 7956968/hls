@@ -166,9 +166,18 @@ set_target_properties(libiwu PROPERTIES
 
 add_dependencies(libiwu libiwu_external_project)
 
+add_library(libiwu_test_common STATIC IMPORTED)
+
+set_target_properties(libiwu_test_common PROPERTIES
+    IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/libiwu/src/libiwu_external_project-build/lib/libiwu_test_common.a
+)
+
+add_dependencies(libiwu_test_common libiwu_external_project)
+
 include_directories(
     ../libiwu/libiwu/include/
     ../libiwu/external/VA_OPT
+    ../libiwu/libiwu/test_common/include
     ../libiwu/external/GSL/include
     ../libiwu/external/variant
     ../libiwu/external/optional
@@ -236,6 +245,7 @@ TARGET_LINK_LIBRARIES(hls-test
     libgtest
     libgmock
     hls
+    libiwu_test_common
 )
 
 #############################################################################

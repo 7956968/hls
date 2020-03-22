@@ -1,14 +1,8 @@
-#include "gtest/gtest.h"
+#include "iwu/test/Test_common.h"
 
-#include <iostream>
-#include <iwu/Log.h>
-#include <string>
-
-
-int main(int argc, char** argv) {
-    // Enable library logging
+int main(int argc, const char** argv) {
+    // Enable logging
     iwu::Log::set_level(iwu::Log::Level::verbose);
 
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    return iwu::test::test_main(gsl::span<const char*>{argv, argv + argc});
 }

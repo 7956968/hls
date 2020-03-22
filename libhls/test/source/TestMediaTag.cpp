@@ -1,7 +1,7 @@
 
-#include "Common.h"
-
 #include "hls/m3u8/Media_tag.h"
+
+#include "iwu/test/Test_common.h"
 
 class TestMediaTag : public ::testing::Test {};
 

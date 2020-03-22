@@ -1,7 +1,7 @@
 
-#include "Common.h"
-
 #include "hls/m3u8/Attribute_list.h"
+
+#include "iwu/test/Test_common.h"
 
 class TestM3u8AttributeList : public ::testing::Test {};
 

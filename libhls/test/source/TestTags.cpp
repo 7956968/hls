@@ -1,12 +1,11 @@
-
-#include "Common.h"
-
 #include "hls/m3u8/Byte_range.h"
 #include "hls/m3u8/Common.h"
 #include "hls/m3u8/Enum_tag.h"
 #include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
 #include "hls/m3u8/Map_tag.h"
+
+#include "iwu/test/Test_common.h"
 
 class TestTags : public ::testing::Test {};
 
