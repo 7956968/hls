@@ -7,9 +7,11 @@ namespace hls {
 namespace m3u8 {
 
 /**
- * @brief The EXTINF tag specifies the duration of a Media Segment. It applies
- * only to the next Media Segment. This tag is REQUIRED for each Media
- * Segment [RFC8216]
+ * @brief The EXTINF tag specifies the duration of a Media Segment.
+ *
+ * It applies only to the next Media Segment
+ *
+ * This tag is REQUIRED for each Media Segment [RFC8216]
  */
 class Inf_tag : public Tag {
 public:

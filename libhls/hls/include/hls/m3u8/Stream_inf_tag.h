@@ -10,11 +10,10 @@ namespace m3u8 {
 
 /**
  * @brief The EXT-X-STREAM-INF tag specifies a Variant Stream, which is a set of
- * Renditions that can be combined to play the presentation.  The   attributes
+ * Renditions that can be combined to play the presentation. The attributes
  * of the tag provide information about the Variant Stream. The URI line that
- * follows the EXT-X-STREAM-INF tag specifies a Media   Playlist that carries a
+ * follows the EXT-X-STREAM-INF tag specifies a Media Playlist that carries a
  * Rendition of the Variant Stream. (source rfc8216)
- *
  */
 class Stream_inf_tag : public Tag {
 public:

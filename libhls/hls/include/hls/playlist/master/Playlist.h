@@ -6,27 +6,32 @@
 #include "hls/m3u8/Uri.h"
 
 #include "hls/playlist/APlaylist.h"
-#include "hls/playlist/IRendition_group.h"
-#include "hls/playlist/IVariant_stream.h"
+#include "hls/playlist/master/IRendition_group.h"
+#include "hls/playlist/master/IVariant_stream.h"
 
 #include <algorithm>
 
 namespace hls {
 namespace playlist {
+namespace master {
 
-class Master_playlist : public APlaylist {
+/**
+ * @brief A Playlist is a Master Playlist if all URI lines in the Playlist
+ * identify Media Playlists
+ *
+ * A Playlist MUST be either a Media Playlist or a
+ * Master Playlist; all other Playlists are invalid (source rfc8216)
+ */
+class Playlist : public APlaylist {
 public:
     /**
-     * @brief A set of one or more EXT-X-MEDIA tags with the same GROUP-ID value
-     * and the same TYPE value defines a Group of Renditions
-     * Each member of the Group MUST be an alternative Rendition of the same
-     * content; otherwise, playback errors can occur [RFC8216]
+     * Rendition group implementation. See IRendition_group for more info
      */
     struct Rendition_group : public IRendition_group {
-        m3u8::Media_tag::Media_type media_type;
-        std::string group_id;
-        std::vector<std::shared_ptr<const m3u8::Media_tag>> media_tags;
-
+        /**
+         * @brief IRendition_group implementation
+         */
+    public:
         m3u8::Media_tag::Media_type type() const override { return media_type; }
 
         const std::string& id() const override { return group_id; }
@@ -44,20 +49,38 @@ public:
             return result;
         }
 
+    public:
         explicit Rendition_group(
           std::shared_ptr<const m3u8::Media_tag> first_tag)
             : media_type{first_tag->media_type()}, group_id{
                                                      first_tag->group_id()} {
             media_tags.push_back(first_tag);
         }
+
+        /**
+         * @brief See IRendition_group::type
+         */
+        m3u8::Media_tag::Media_type media_type;
+
+        /**
+         * @brief See IRendition_group::id
+         */
+        std::string group_id;
+
+        /**
+         * @brief See IRendition_group::media_tags
+         */
+        std::vector<std::shared_ptr<const m3u8::Media_tag>> media_tags;
     };
 
-    class Variant_stream : public IVariant_stream {
+    /**
+     * @brief See IVariant_stream
+     */
+    struct Variant_stream : public IVariant_stream {
+        /**
+         * @brief IVariant_stream implementation
+         */
     public:
-        Variant_stream(std::shared_ptr<const m3u8::Stream_inf_tag> stream_inf,
-                       std::shared_ptr<const m3u8::Uri> uri)
-            : stream_inf_tag{stream_inf}, uri_tag{uri} {}
-
         const m3u8::Uri& uri() const override { return *uri_tag; }
 
         const m3u8::Stream_inf_tag& stream_inf() const override {
@@ -73,6 +96,11 @@ public:
                      : nullptr;
         }
 
+    public:
+        Variant_stream(std::shared_ptr<const m3u8::Stream_inf_tag> stream_inf,
+                       std::shared_ptr<const m3u8::Uri> uri)
+            : stream_inf_tag{stream_inf}, uri_tag{uri} {}
+
 
         std::shared_ptr<const m3u8::Stream_inf_tag> stream_inf_tag;
         std::shared_ptr<const m3u8::Uri> uri_tag;
@@ -81,7 +109,7 @@ public:
     };
 
 public:
-    explicit Master_playlist(const std::string& uri) : APlaylist{uri} {}
+    explicit Playlist(const std::string& uri) : APlaylist{uri} {}
 
     void add_variant(std::shared_ptr<const m3u8::Stream_inf_tag> stream_inf,
                      std::shared_ptr<const m3u8::Uri> uri) {
@@ -195,6 +223,7 @@ private:
     std::vector<std::shared_ptr<Variant_stream>> m_variant_streams;
 };
 
+} // namespace master
 } // namespace playlist
 } // namespace hls
 

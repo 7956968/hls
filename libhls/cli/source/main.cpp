@@ -59,7 +59,7 @@ public:
 
             try {
                 while (true) {
-                    const hls::playlist::Media_segment& segment{
+                    const hls::playlist::media::Segment& segment{
                       stream->get_next()};
 
                     const std::string segment_uri{stream->playlist().base_uri()
@@ -90,7 +90,7 @@ public:
     iwu::Status command_ls(const iwu::Command_executor::Command&) {
         m_manager.master_playlist();
 
-        std::vector<const hls::playlist::IVariant_stream*> streams{
+        std::vector<const hls::playlist::master::IVariant_stream*> streams{
           m_manager.master_playlist()->streams()};
 
         DILOGI("Variant streams: %d", streams.size());
@@ -105,7 +105,7 @@ public:
                hls::m3u8::Media_tag::Media_type::subtitles}};
 
             for (auto type : media_types) {
-                const hls::playlist::IRendition_group* group{
+                const hls::playlist::master::IRendition_group* group{
                   stream->get_rendition_group(type)};
                 if (!group) {
                     continue;

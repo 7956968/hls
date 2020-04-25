@@ -3,20 +3,20 @@
 
 #include "hls/Common.h"
 #include "hls/m3u8/IElement_stream.h"
-#include "hls/playlist/Master_playlist.h"
+#include "hls/playlist/master/Playlist.h"
 
 #include <vector>
 
 namespace hls {
 namespace playlist {
+namespace master {
 
-class Master_playlist_parser {
+class Parser {
 public:
-    explicit Master_playlist_parser(m3u8::IElement_stream* stream)
-        : m_stream{stream} {}
+    explicit Parser(m3u8::IElement_stream* stream) : m_stream{stream} {}
 
-    std::unique_ptr<Master_playlist> parse(const std::string& uri) {
-        auto playlist{std::make_unique<Master_playlist>(uri)};
+    std::unique_ptr<Playlist> parse(const std::string& uri) {
+        auto playlist{std::make_unique<Playlist>(uri)};
 
         while (true) {
             std::shared_ptr<const m3u8::AElement> element;
@@ -87,8 +87,9 @@ private:
     bool m_header_found{false};
 
     m3u8::IElement_stream* m_stream;
-}; // namespace playlist
+};
 
+} // namespace master
 } // namespace playlist
 } // namespace hls
 

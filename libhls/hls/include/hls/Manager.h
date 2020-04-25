@@ -6,8 +6,8 @@
 #include "hls/m3u8/Default_parser_factory.h"
 #include "hls/m3u8/Parser_element_stream.h"
 #include "hls/m3u8/String_line_reader.h"
-#include "hls/playlist/Master_playlist_parser.h"
-#include "hls/playlist/Media_playlist_parser.h"
+#include "hls/playlist/master/Parser.h"
+#include "hls/playlist/media/Parser.h"
 
 #include "iwu/Default_downloader_factory.h"
 #include "iwu/Log.h"
@@ -22,27 +22,27 @@ namespace hls {
 
 class Segment_stream {
 public:
-    Segment_stream(std::unique_ptr<playlist::Media_playlist> playlist)
+    Segment_stream(std::unique_ptr<playlist::media::Playlist> playlist)
         : m_playlist{std::move(playlist)} {
-        m_current_segment = m_playlist->media_segments().cbegin();
+        m_current_segment = m_playlist->segments().cbegin();
     }
 
-    const playlist::Media_segment& get_next() {
-        if (m_current_segment == m_playlist->media_segments().cend()) {
+    const playlist::media::Segment& get_next() {
+        if (m_current_segment == m_playlist->segments().cend()) {
             throw End_of_stream{"No more segments available"};
         }
 
-        const playlist::Media_segment& segment{*m_current_segment};
+        const playlist::media::Segment& segment{*m_current_segment};
 
         ++m_current_segment;
 
         return segment;
     }
 
-    const playlist::Media_playlist& playlist() const { return *m_playlist; }
+    const playlist::media::Playlist& playlist() const { return *m_playlist; }
 
-    std::vector<playlist::Media_segment>::const_iterator m_current_segment;
-    std::unique_ptr<const playlist::Media_playlist> m_playlist;
+    std::vector<playlist::media::Segment>::const_iterator m_current_segment;
+    std::unique_ptr<const playlist::media::Playlist> m_playlist;
 };
 
 
@@ -57,14 +57,14 @@ public:
         std::lock_guard<std::mutex> lock{m_mutex};
 
         m_master_playlist =
-          open_playlist<playlist::Master_playlist,
-                        playlist::Master_playlist_parser>(uri);
+          open_playlist<playlist::master::Playlist, playlist::master::Parser>(
+            uri);
     }
 
     /**
      * @brief Master playlist
      */
-    const playlist::Master_playlist* master_playlist() const {
+    const playlist::master::Playlist* master_playlist() const {
         std::lock_guard<std::mutex> lock{m_mutex};
 
         return m_master_playlist.get();
@@ -73,8 +73,7 @@ public:
     std::unique_ptr<Segment_stream> open_media_playlist(
       const hls::m3u8::Uri& uri) {
         return std::make_unique<Segment_stream>(
-          open_playlist<playlist::Media_playlist,
-                        playlist::Media_playlist_parser>(
+          open_playlist<playlist::media::Playlist, playlist::media::Parser>(
             m_master_playlist->base_uri() + "/"s + uri.uri()));
     }
 
@@ -114,7 +113,7 @@ private:
     }
 
 private:
-    std::unique_ptr<playlist::Master_playlist> m_master_playlist;
+    std::unique_ptr<playlist::master::Playlist> m_master_playlist;
     std::unique_ptr<iwu::IDownloader> m_downloader;
 
     mutable std::mutex m_mutex;

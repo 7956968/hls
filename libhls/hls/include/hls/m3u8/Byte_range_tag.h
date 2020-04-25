@@ -12,8 +12,10 @@ namespace m3u8 {
 
 /**
  * @brief Tag indicates that a Media Segment is a sub-range
- * of the resource identified by its URI. It applies only to the next
- * URI line that follows it in the Playlist. [RFC8216]
+ * of the resource identified by its URI.
+ *
+ * It applies only to the next URI line that follows it in the Playlist.
+ * [RFC8216]
  */
 class Byte_range_tag : public Tag {
 public:

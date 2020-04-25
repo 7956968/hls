@@ -1,7 +1,7 @@
 #include "hls/m3u8/Default_parser_factory.h"
 #include "hls/m3u8/Parser_element_stream.h"
 #include "hls/m3u8/String_line_reader.h"
-#include "hls/playlist/Media_playlist_parser.h"
+#include "hls/playlist/media/Parser.h"
 
 #include "iwu/test/Test_common.h"
 
@@ -14,17 +14,17 @@ public:
           hls::m3u8::Default_parser_factory{}.create());
     }
 
-    std::unique_ptr<hls::playlist::Media_playlist> parse(
+    std::unique_ptr<hls::playlist::media::Playlist> parse(
       const std::string& input) {
         auto stream{create_stream(input)};
 
-        return hls::playlist::Media_playlist_parser{stream.get()}.parse(""s);
+        return hls::playlist::media::Parser{stream.get()}.parse(""s);
     }
 };
 
 
 TEST_F(TestMediaPlaylist, Main) {
-    std::unique_ptr<hls::playlist::Media_playlist> pl{
+    std::unique_ptr<hls::playlist::media::Playlist> pl{
       parse("#EXTM3U\n"
             "#EXT-X-TARGETDURATION:10\n"
             "#EXT-X-VERSION:3\n"
@@ -36,8 +36,7 @@ TEST_F(TestMediaPlaylist, Main) {
             "http://media.example.com/third.ts\n"
             "#EXT-X-ENDLIST\n")};
 
-    const std::vector<hls::playlist::Media_segment>& segments{
-      pl->media_segments()};
+    const std::vector<hls::playlist::media::Segment>& segments{pl->segments()};
     ASSERT_EQ(3, segments.size());
 
     ASSERT_EQ(segments[0].uri(), "http://media.example.com/first.ts");

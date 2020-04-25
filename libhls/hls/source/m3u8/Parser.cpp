@@ -25,6 +25,10 @@ Parser::Parser() {
       .register_integer_tag_type("-X-VERSION", Tag::Tag_type::x_version);
 
     // Media segment tags
+    // Each Media Segment is specified by a series of Media Segment tags
+    // followed by a URI.  Some Media Segment tags apply to just the next
+    // segment; others apply to all subsequent segments until another instance
+    // of the same tag [RFC8216]
     register_specialized_tag_type<Inf_tag>("INF", Tag::Tag_type::inf)
       .register_specialized_tag_type<Byte_range_tag>(
         "-X-BYTERANGE", Tag::Tag_type::x_byte_range)

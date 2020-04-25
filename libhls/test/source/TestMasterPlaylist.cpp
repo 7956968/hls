@@ -1,7 +1,7 @@
 #include "hls/m3u8/Default_parser_factory.h"
 #include "hls/m3u8/Parser_element_stream.h"
 #include "hls/m3u8/String_line_reader.h"
-#include "hls/playlist/Master_playlist_parser.h"
+#include "hls/playlist/master/Parser.h"
 
 #include "iwu/test/Test_common.h"
 
@@ -14,25 +14,26 @@ public:
           hls::m3u8::Default_parser_factory{}.create());
     }
 
-    std::unique_ptr<hls::playlist::Master_playlist> parse(
+    std::unique_ptr<hls::playlist::master::Playlist> parse(
       const std::string& input) {
         auto stream{create_stream(input)};
 
-        return hls::playlist::Master_playlist_parser{stream.get()}.parse(""s);
+        return hls::playlist::master::Parser{stream.get()}.parse(""s);
     }
 };
 
 TEST_F(TestMasterPlaylist, Empty) { ASSERT_THROW(parse(""), hls::Parse_error); }
 
 TEST_F(TestMasterPlaylist, Basic) {
-    std::unique_ptr<hls::playlist::Master_playlist> pl{
+    std::unique_ptr<hls::playlist::master::Playlist> pl{
       parse("#EXTM3U\n"
             "#EXT-X-STREAM-INF:BANDWIDTH=1280000,AVERAGE-BANDWIDTH=1000000\n"
             "http://example.com/low.m3u8\n"
             "#EXT-X-STREAM-INF:BANDWIDTH=2560000,AVERAGE-BANDWIDTH=2000000\n"
             "http://example.com/mid.m3u8\n")};
 
-    std::vector<const hls::playlist::IVariant_stream*> streams{pl->streams()};
+    std::vector<const hls::playlist::master::IVariant_stream*> streams{
+      pl->streams()};
 
     ASSERT_EQ(2, streams.size());
 
@@ -44,7 +45,7 @@ TEST_F(TestMasterPlaylist, Basic) {
 }
 
 TEST_F(TestMasterPlaylist, AlternateAudio) {
-    std::unique_ptr<hls::playlist::Master_playlist> pl{parse(
+    std::unique_ptr<hls::playlist::master::Playlist> pl{parse(
       "#EXTM3U\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aac\",NAME=\"English\",DEFAULT=YES,"
       "AUTOSELECT=YES,LANGUAGE=\"en\", URI=\"main/english-audio.m3u8\"\n"
@@ -55,7 +56,8 @@ TEST_F(TestMasterPlaylist, AlternateAudio) {
       "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"mp4a.40.5\",AUDIO=\"aac\"\n"
       "main/english-audio.m3u8\n")};
 
-    std::vector<const hls::playlist::IVariant_stream*> streams{pl->streams()};
+    std::vector<const hls::playlist::master::IVariant_stream*> streams{
+      pl->streams()};
 
     ASSERT_EQ(2, streams.size());
 
@@ -76,7 +78,7 @@ TEST_F(TestMasterPlaylist, AlternateAudio) {
       hls::m3u8::Media_tag::Media_type::closed_captions));
 
     {
-        const hls::playlist::IRendition_group* rg{
+        const hls::playlist::master::IRendition_group* rg{
           streams[0]->get_rendition_group(
             hls::m3u8::Media_tag::Media_type::audio)};
 
@@ -88,7 +90,7 @@ TEST_F(TestMasterPlaylist, AlternateAudio) {
 }
 
 TEST_F(TestMasterPlaylist, AlternateVideo) {
-    std::unique_ptr<hls::playlist::Master_playlist> pl{parse(
+    std::unique_ptr<hls::playlist::master::Playlist> pl{parse(
       // clang-format off
 "#EXTM3U\n"
 "#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"low\",NAME=\"Main\",DEFAULT=YES,URI=\"low/main/audio-video.m3u8\"\n"
@@ -109,5 +111,6 @@ TEST_F(TestMasterPlaylist, AlternateVideo) {
       // clang-format on
       )};
 
-    std::vector<const hls::playlist::IVariant_stream*> streams{pl->streams()};
+    std::vector<const hls::playlist::master::IVariant_stream*> streams{
+      pl->streams()};
 }
