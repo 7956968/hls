@@ -2,7 +2,14 @@
 #define HLS_PLAYLISTMEDIAPLAYLISTPARSER_H_
 
 #include "hls/Common.h"
+#include "hls/m3u8/Byte_range_tag.h"
+#include "hls/m3u8/Common.h"
+#include "hls/m3u8/Enum_tag.h"
 #include "hls/m3u8/IElement_stream.h"
+#include "hls/m3u8/Integer_tag.h"
+#include "hls/m3u8/Key_tag.h"
+#include "hls/m3u8/Map_tag.h"
+#include "hls/m3u8/Start_tag.h"
 #include "hls/playlist/APlaylist_parser.h"
 #include "hls/playlist/media/Playlist.h"
 
@@ -12,73 +19,173 @@ namespace media {
 
 class Parser : public APlaylist_parser {
 public:
-    using APlaylist_parser::APlaylist_parser;
-
-    std::unique_ptr<Playlist> parse(const std::string& uri) {
-        auto playlist{std::make_unique<Playlist>(uri)};
-
-        // Indication that the playlist header was found
-        bool header_found{false};
-
-        // Elements buffered before we ran into an URI (terminating element for
-        // a segment)
-        std::vector<std::shared_ptr<const m3u8::AElement>> buffer;
-
-        while (true) {
-            // Read the header
-            if (!header_found) {
-                read_tag<m3u8::Tag>(m3u8::Tag::Tag_type::m3u8);
-                header_found = true;
-                continue;
-            }
-
-            // Read next element
-            std::shared_ptr<const m3u8::AElement> element;
-            try {
-                element = stream()->get_next();
-            } catch (const End_of_stream&) { break; }
-
-            // Ran into an uri, so we can construct a segment
-            if (element->type() == m3u8::AElement::Type::uri) {
-                std::shared_ptr<const m3u8::Inf_tag> inf_tag;
-
-                // Check all the gathered elements for segment metadata
-                for (auto& buffered_element : buffer) {
-                    // Only expecting tags here
-                    Expects(buffered_element->type()
-                            == m3u8::AElement::Type::tag);
-                    auto tag{
-                      dynamic_cast<const m3u8::Tag*>(buffered_element.get())};
-
-                    if (tag->type() == hls::m3u8::Tag::Tag_type::inf) {
-                        inf_tag =
-                          std::dynamic_pointer_cast<const m3u8::Inf_tag>(
-                            buffered_element);
-                    } else {
-                        DILOGW("Unhandled tag: %s",
-                               to_string(tag->type()).c_str());
-                    }
-                }
-
-                buffer.clear();
-
-                // Add a segment
-                playlist->add_segment(
-                  Segment{dynamic_cast<const m3u8::Uri*>(element.get())->uri(),
-                          inf_tag});
-            } else {
-                // Just buffer the elements and process later
-                buffer.push_back(element);
-            }
-        }
-
-        Ensures(header_found);
-
-        return playlist;
-    }
+    /**
+     * @brief Parse the playlist
+     *
+     * @param stream Element stream
+     * @param uri Playlist URI
+     * @return Parsed playlist
+     */
+    static std::unique_ptr<Playlist> parse(m3u8::IElement_stream* stream,
+                                           const std::string& uri);
 
 private:
-    std::vector<std::shared_ptr<const m3u8::AElement>> m_buffer;
+    /**
+     * @brief Constructor
+     *
+     * @param stream Element stream
+     * @param base_uri Playlist URI
+     */
+    Parser(m3u8::IElement_stream* stream, const std::string& base_uri);
+
+    /**
+     * @brief Parse the playlist
+     *
+     * @return Parsed playlist
+     */
+    std::unique_ptr<Playlist> parse();
+
+private:
+    /**
+     * @brief Parse next element from the stream. This may result in some
+     * additional playlist metadata or a new segment
+     *
+     * @throw End_of_stream when all elements are depleted
+     */
+    void parse_next();
+
+private:
+    /**
+     * @brief Segment specific tags that only apply to the next segment
+     */
+    struct Segment_tags {
+        /**
+         * @brief #EXT-INF tag (mandatory)
+         */
+        std::shared_ptr<const m3u8::Inf_tag> inf;
+
+        /**
+         * @brief #EXT-X-BYTERANGE tag (optional)
+         */
+        std::shared_ptr<const m3u8::Byte_range_tag> byte_range;
+
+        /**
+         * @brief #EXT-X-PROGRAM-DATE-TIME tag (optional)
+         */
+        std::shared_ptr<const m3u8::Tag> program_date_time;
+
+        /**
+         * @brief Indication that we ran into an #EXT-X-GAP tag
+         */
+        bool gap{false};
+    };
+
+    /**
+     * @brief Tags that are global to the media playlist
+     */
+    struct Playlist_tags {
+        /**
+         * @brief #EXTM3U tag (mandatory)
+         */
+        std::shared_ptr<const m3u8::Tag> m3u;
+
+        /**
+         * @brief #EXT-X-TARGET_DURATION tag (mandatory)
+         */
+        std::shared_ptr<const m3u8::Integer_tag> target_duration;
+
+        /**
+         * @brief Playlist type extracted from #EXT-X-PLAYLIST-TYPE tag
+         * (optional)
+         */
+        nonstd::optional<m3u8::Playlist_type> playlist_type;
+
+        /**
+         * @brief Indicates that we ran into an #EXT-X-I-FRAMES-ONLY tag
+         * (optional)
+         */
+        bool iframes_only{false};
+
+        /**
+         * @brief Indicates that we ran into an #EXT-X-INDEPENDENT-SEGMENTS tag
+         * (optional)
+         */
+        bool independent_segments{false};
+
+        /**
+         * @brief #EXT-X-START tag (optional)
+         */
+        std::shared_ptr<const m3u8::Start_tag> start;
+    };
+
+    /**
+     * @brief Shared tags that should be applied to all the
+     * segments which. May be overwritten by new values as we go follow it
+     */
+    struct Segment_shared_tags {
+        /**
+         * @brief #EXT-X-KEY tag (optional)
+         */
+        std::shared_ptr<const m3u8::Key_tag> key;
+
+        /**
+         * @brief #EXT-X-MAP tag (optional)
+         */
+        std::shared_ptr<const m3u8::Map_tag> map;
+
+        /**
+         * @brief #-X-BITRATE tag (optional)
+         */
+        std::shared_ptr<const m3u8::Integer_tag> bitrate;
+    };
+
+private:
+    /**
+     * @brief Playlist base URI
+     */
+    std::string m_base_uri;
+
+    /**
+     * @brief Global playlist tags
+     */
+    Playlist_tags m_playlist_tags;
+
+    /**
+     * @brief Segment specific tags
+     */
+    Segment_tags m_segment_tags;
+
+    /**
+     * @brief Tags shared between all following segments
+     */
+    Segment_shared_tags m_segment_shared_tags;
+
+    /**
+     * @brief Defaulted to 0, may be overriden by EXT-X-MEDIASEQUENCE tag.
+     * Increases every time a segment is created
+     */
+    long m_media_sequence_number{0};
+
+    /**
+     * @brief Defaulted to 0. Overriden by EXT-X-DISCONTINUITY-SEQUENCE
+     * tag. Increased by 1 every time EXT-X-DISCONTINUITY is encountered
+     */
+    long m_discontinuity_sequence_number{0};
+
+    /**
+     * @brief Indication if at least one segment was read (i.e. header is done)
+     */
+    bool m_header_read{false};
+
+    /**
+     * @brief Playlist we created
+     */
+    std::unique_ptr<Playlist> m_playlist;
+
+    /**
+     * @brief List of segments we created
+     */
+    std::vector<Segment> m_segments;
 };
 
 } // namespace media

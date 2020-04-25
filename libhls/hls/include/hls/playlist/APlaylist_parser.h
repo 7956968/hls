@@ -17,8 +17,7 @@ public:
      *
      * @param stream M3U8 element stream
      */
-    explicit APlaylist_parser(m3u8::IElement_stream* stream)
-        : m_stream{stream} {}
+    APlaylist_parser(m3u8::IElement_stream* stream) : m_stream{stream} {}
 
     /**
      * @brief Element stream
@@ -26,11 +25,9 @@ public:
     m3u8::IElement_stream* stream() { return m_stream; }
 
     /**
-     * @brief
+     * @brief Read a tag and throw if next element is not tag of given type
      *
-     * @tparam T
-     * @param type
-     * @return std::shared_ptr<const T>
+     * @param type (optional) Tag type to enforce
      */
     template<typename T>
     std::shared_ptr<const T>
@@ -39,12 +36,15 @@ public:
         std::shared_ptr<const m3u8::AElement> element{m_stream->get_next()};
 
         // Check that it's indeed a tag
-        Expects(element->type() == m3u8::AElement::Type::tag);
+        Expects(element->type() == m3u8::AElement::Type::tag,
+                Error{"Expected tag, got "s + to_string(element->type())});
 
         // If type is specified, make sure it's of that type
         if (type != m3u8::Tag::Tag_type::unknown) {
             Expects(type
-                    == dynamic_cast<const m3u8::Tag*>(element.get())->type());
+                      == dynamic_cast<const m3u8::Tag*>(element.get())->type(),
+                    Error{"Unexpected tag type: expected="s + to_string(type)
+                          + " got="s + to_string(element->type())});
         }
 
         // We can now safely cast it
@@ -52,9 +52,19 @@ public:
     }
 
     /**
-     * @brief Playlist base URI
+     * @brief Read an element of given type, and throw if something else is read
      */
-    const std::string& base_uri() const { return m_base_uri; }
+    template<typename T>
+    std::shared_ptr<const T> read_type() {
+        std::shared_ptr<const m3u8::AElement> element{m_stream->get_next()};
+
+        auto typed_element{std::dynamic_pointer_cast<const T>(element)};
+        Expects(typed_element, Error{"Unexpected element type "s
+                                     + to_string(element->type())});
+
+        return typed_element;
+    }
+
 
 private:
     /**
@@ -62,12 +72,6 @@ private:
      *
      */
     m3u8::IElement_stream* m_stream;
-
-    /**
-     * @brief See APlaylist_parser::base_uri
-     *
-     */
-    const std::string m_base_uri;
 };
 
 } // namespace playlist

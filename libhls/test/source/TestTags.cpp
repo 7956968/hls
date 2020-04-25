@@ -4,6 +4,7 @@
 #include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
 #include "hls/m3u8/Map_tag.h"
+#include "hls/m3u8/Start_tag.h"
 
 #include "iwu/test/Test_common.h"
 
@@ -129,5 +130,27 @@ TEST_F(TestTags, MapTag) {
         ASSERT_EQ(tag.uri(), "http://test");
         ASSERT_EQ(tag.byte_range().value().length(), 1234);
         ASSERT_EQ(tag.byte_range().value().start_byte(), 52);
+    }
+}
+
+TEST_F(TestTags, StartTag) {
+    ASSERT_ANY_THROW(hls::m3u8::Start_tag{""});
+
+    {
+        hls::m3u8::Start_tag tag{"TIME-OFFSET=12345.35"};
+        ASSERT_FALSE(tag.precise());
+        ASSERT_FLOAT_EQ(12345.35, tag.time_offset());
+    }
+
+    {
+        hls::m3u8::Start_tag tag{"TIME-OFFSET=-42.45"};
+        ASSERT_FALSE(tag.precise());
+        ASSERT_FLOAT_EQ(-42.45, tag.time_offset());
+    }
+
+    {
+        hls::m3u8::Start_tag tag{"TIME-OFFSET=-42.45,PRECISE=YES"};
+        ASSERT_TRUE(tag.precise());
+        ASSERT_FLOAT_EQ(-42.45, tag.time_offset());
     }
 }

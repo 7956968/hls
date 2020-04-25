@@ -201,6 +201,8 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Byte_range.cpp
     ${LIB_ROOT}/hls/source/m3u8/Map_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Key_tag.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Start_tag.cpp
+    ${LIB_ROOT}/hls/source/playlist/media/Parser.cpp
 )
 
 include_directories(

@@ -86,7 +86,7 @@ private:
         std::unique_ptr<m3u8::IElement_stream> parser_stream{
           create_stream(uri)};
 
-        return Parser_type{parser_stream.get()}.parse(uri);
+        return Parser_type::parse(parser_stream.get(), uri);
     }
 
     /**

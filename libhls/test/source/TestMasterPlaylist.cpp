@@ -18,7 +18,7 @@ public:
       const std::string& input) {
         auto stream{create_stream(input)};
 
-        return hls::playlist::master::Parser{stream.get()}.parse(""s);
+        return hls::playlist::master::Parser::parse(stream.get(), ""s);
     }
 };
 

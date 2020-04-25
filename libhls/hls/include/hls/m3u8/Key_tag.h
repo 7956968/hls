@@ -1,5 +1,5 @@
-#ifndef HLS_M3U8_Media_tag_H_
-#define HLS_M3U8_Media_tag_H_
+#ifndef HLS_M3U8_KEYTAG_H_
+#define HLS_M3U8_KEYTAG_H_
 
 #include "hls/m3u8/Attribute_list.h"
 #include "hls/m3u8/Tag.h"

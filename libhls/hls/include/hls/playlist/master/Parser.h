@@ -3,6 +3,7 @@
 
 #include "hls/Common.h"
 #include "hls/m3u8/IElement_stream.h"
+#include "hls/playlist/APlaylist_parser.h"
 #include "hls/playlist/master/Playlist.h"
 
 #include <vector>
@@ -11,28 +12,38 @@ namespace hls {
 namespace playlist {
 namespace master {
 
-class Parser {
+class Parser : public APlaylist_parser {
 public:
-    explicit Parser(m3u8::IElement_stream* stream) : m_stream{stream} {}
+    static std::unique_ptr<Playlist> parse(m3u8::IElement_stream* stream,
+                                           const std::string& uri) {
+        Parser parser{stream, uri};
+        return parser.parse();
+    }
 
-    std::unique_ptr<Playlist> parse(const std::string& uri) {
-        auto playlist{std::make_unique<Playlist>(uri)};
+private:
+    Parser(m3u8::IElement_stream* stream, const std::string& uri)
+        : APlaylist_parser(stream), m_base_uri{uri} {}
+
+    std::unique_ptr<Playlist> parse() {
+        auto playlist{std::make_unique<Playlist>(m_base_uri)};
+
+        bool header_found{false};
 
         while (true) {
             std::shared_ptr<const m3u8::AElement> element;
 
             try {
-                element = m_stream->get_next();
+                element = stream()->get_next();
             } catch (const End_of_stream&) { break; }
 
             DILOGV("element: %s", to_string(element->type()).c_str());
 
-            if (!m_header_found) {
+            if (!header_found) {
                 Expects(element->type() == m3u8::AElement::Type::tag,
                         Parse_error{"Unexpected tag before M3U: "s
                                     + hls::to_string(element->type())});
 
-                m_header_found = true;
+                header_found = true;
                 continue;
             }
 
@@ -64,29 +75,15 @@ public:
         }
 
 
-        Expects(m_header_found, Parse_error{"Playlist header not found"});
+        Expects(header_found, Parse_error{"Playlist header not found"});
 
         playlist->finalize();
 
         return playlist;
     }
 
-    template<typename T>
-    std::shared_ptr<const T> read_type() {
-        std::shared_ptr<const m3u8::AElement> element{m_stream->get_next()};
-
-        auto typed_element{std::dynamic_pointer_cast<const T>(element)};
-        Expects(typed_element);
-
-        return typed_element;
-    }
-
 private:
-    std::vector<std::shared_ptr<const m3u8::AElement>> m_buffer;
-
-    bool m_header_found{false};
-
-    m3u8::IElement_stream* m_stream;
+    std::string m_base_uri;
 };
 
 } // namespace master

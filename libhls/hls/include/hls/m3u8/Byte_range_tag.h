@@ -1,5 +1,5 @@
-#ifndef HLS_M3U8MAPTAG_H_
-#define HLS_M3U8MAPTAG_H_
+#ifndef HLS_M3U8BYTERANGETAG_H
+#define HLS_M3U8BYTERANGETAG_H
 
 #include "hls/m3u8/Attribute_list.h"
 #include "hls/m3u8/Byte_range.h"
