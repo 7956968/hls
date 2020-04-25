@@ -200,6 +200,7 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Common.cpp
     ${LIB_ROOT}/hls/source/m3u8/Byte_range.cpp
     ${LIB_ROOT}/hls/source/m3u8/Map_tag.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Key_tag.cpp
 )
 
 include_directories(
@@ -230,6 +231,7 @@ set(HLS_TEST_SOURCES
     ${LIB_ROOT}/test/source/TestPlaylistParser.cpp
     ${LIB_ROOT}/test/source/TestMasterPlaylist.cpp
     ${LIB_ROOT}/test/source/TestMediaPlaylist.cpp
+    ${LIB_ROOT}/test/source/TestKeyTag.cpp
 )
 
 include_directories("${LIB_ROOT}/test/include")
