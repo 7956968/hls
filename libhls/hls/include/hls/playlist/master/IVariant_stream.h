@@ -35,6 +35,9 @@ public:
     virtual const IRendition_group* get_rendition_group(
       m3u8::Media_tag::Media_type type) const = 0;
 
+    /**
+     * @brief Destructor
+     */
     virtual ~IVariant_stream() = default;
 };
 

@@ -23,10 +23,8 @@ using namespace iwu::backport::literals;
 
 #pragma clang diagnostic pop
 
-
 namespace hls {
 
-enum class Status { OK, ERROR };
 
 struct Error : public iwu::Error {
     using iwu::Error::Error;

@@ -17,8 +17,14 @@ namespace m3u8 {
  */
 class Stream_inf_tag : public Tag {
 public:
+    /**
+     * @brief See Stream_inf_tag::hdcp_level
+     */
     enum class Hdcp_level { type_0, type_1, none };
 
+    /**
+     * @brief See Stream_inf_tag::video_range
+     */
     enum class Video_range { sdr, pq };
 
 public:
@@ -128,23 +134,77 @@ public:
     nonstd::optional<std::pair<bool, std::string>> closed_captions() const;
 
 private:
+    /**
+     * @brief See Stream_inf_tag::bandwidth
+     */
     long m_bandwidth{-1};
+
+    /**
+     * @brief See Stream_inf_tag::average_bandwidth
+     */
     nonstd::optional<long> m_average_bandwidth;
+
+    /**
+     * @brief See Stream_inf_tag::codecs
+     */
     nonstd::optional<std::vector<std::string>> m_codecs;
+
+    /**
+     * @brief See Stream_inf_tag::resolution
+     */
     nonstd::optional<Attribute_list::Resolution> m_resolution;
+
+    /**
+     * @brief See Stream_inf_tag::frame_rate
+     */
     nonstd::optional<float> m_frame_rate;
+
+    /**
+     * @brief See Stream_inf_tag::hdcp_level
+     */
     nonstd::optional<Hdcp_level> m_hdcp_level;
+
+    /**
+     * @brief See Stream_inf_tag::allowed_cpc
+     */
     nonstd::optional<std::vector<std::string>> m_allowed_cpc;
+
+    /**
+     * @brief See Stream_inf_tag::video_range
+     */
     nonstd::optional<Video_range> m_video_range;
+
+    /**
+     * @brief See Stream_inf_tag::audio
+     */
     nonstd::optional<std::string> m_audio;
+
+    /**
+     * @brief See Stream_inf_tag::video
+     */
     nonstd::optional<std::string> m_video;
+
+    /**
+     * @brief See Stream_inf_tag::subtitles
+     */
     nonstd::optional<std::string> m_subtitles;
+
+    /**
+     * @brief See Stream_inf_tag::closed_captions
+     */
     nonstd::optional<std::pair<bool, std::string>> m_closed_captions;
 
 private:
+    /**
+     * @brief Hdcp_level enum parser
+     */
     static std::function<Hdcp_level(const std::string&)> s_hdcp_level_parser;
+
+    /**
+     * @brief Video_range enum parser
+     */
     static std::function<Video_range(const std::string&)> s_video_range_parser;
-}; // namespace m3u8
+};
 
 } // namespace m3u8
 } // namespace hls

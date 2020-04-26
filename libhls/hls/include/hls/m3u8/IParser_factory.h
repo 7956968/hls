@@ -8,10 +8,19 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Parser factory
+ */
 class IParser_factory {
 public:
+    /**
+     * @brief Creates a parser
+     */
     virtual std::unique_ptr<IParser> create() = 0;
 
+    /**
+     * @brief Destructor
+     */
     virtual ~IParser_factory() = default;
 };
 

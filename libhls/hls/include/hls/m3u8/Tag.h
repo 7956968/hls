@@ -8,8 +8,14 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Playlist tag base class
+ */
 class Tag : public AElement {
 public:
+    /**
+     * @brief Tag type
+     */
     enum class Tag_type {
         // Basic tags
         m3u8 = 0,
@@ -29,10 +35,6 @@ public:
         x_date_range,
 
         // Media playlist tags
-
-        /**
-         * @brief EXT-X-TARGETDURATION [RFC82216/4.4.4.1]
-         */
         x_target_duration,
         x_media_sequence,
         x_discontinuity_sequence,
@@ -55,11 +57,18 @@ public:
         unknown
     };
 
-    Tag(Tag_type type) : AElement{AElement::Type::tag}, m_type{type} {}
+public:
+    explicit Tag(Tag_type type) : AElement{AElement::Type::tag}, m_type{type} {}
 
+    /**
+     * @brief Type of the tag
+     */
     Tag_type type() const { return m_type; }
 
 private:
+    /**
+     * @brief See Tag::type
+     */
     Tag_type m_type{Tag_type::unknown};
 };
 

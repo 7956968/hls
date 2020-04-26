@@ -7,10 +7,23 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Line reader which takes a plain string as a source
+
+ */
 class String_line_reader : public ILine_reader {
 public:
-    String_line_reader(const std::string& source) : m_source{source} {}
+    /**
+     * @brief Constructor
+     *
+     * @param source String data source
+     */
+    explicit String_line_reader(const std::string& source) : m_source{source} {}
 
+    /**
+     * @brief ILine_reader implementation
+     */
+public:
     std::string read_line() override {
         if (m_source.empty()) {
             throw End_of_stream{};
@@ -30,6 +43,10 @@ public:
     }
 
 private:
+    /**
+     * @brief Data source
+
+     */
     std::string m_source;
 };
 

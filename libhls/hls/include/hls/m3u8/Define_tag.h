@@ -53,4 +53,5 @@ private:
 
 } // namespace m3u8
 } // namespace hls
+
 #endif

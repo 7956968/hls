@@ -8,15 +8,42 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Playlits type as defined in RFC8216b/4.4.3.5 EXT-X-PLAYLIST-TYPE
+ */
+enum class Playlist_type {
+    /**
+     * @brief Indicates that Media Segments can only be added to the end of the
+     * Media Playlist
+     */
+    event,
 
-enum class Playlist_type { event, vod };
+    /**
+     * @brief Indicates the Media Playlist cannot change
+     */
+    vod
+};
 
-
+/**
+ * @brief Enum parser string
+ *
+ * @tparam T Enum class
+ */
 template<typename T>
 using Enum_parser_fnc = std::function<T(const std::string&)>;
 
+/**
+ * @brief Get the playlist type enum parser
+ */
 const Enum_parser_fnc<Playlist_type>& get_playlist_type_parser();
 
+/**
+ * @brief Parse an enum string
+ *
+ * @tparam T enum class
+ * @param name_map Name/value map
+ * @param name Field name
+ */
 template<typename T>
 T parse_enum_string(const std::map<std::string, T>& name_map,
                     const std::string& name) {

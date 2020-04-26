@@ -11,6 +11,11 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Generic enumeration tag
+ *
+ * @tparam T Enum class
+ */
 template<typename T>
 class Enum_tag : public Tag {
 public:
@@ -18,9 +23,15 @@ public:
              std::function<T(const std::string&)> parser)
         : Tag{type}, m_value{parser(value)} {}
 
+    /**
+     * @brief Enum value
+     */
     T value() const { return m_value; }
 
 private:
+    /**
+     * @brief See Enum_tag::value
+     */
     T m_value;
 };
 

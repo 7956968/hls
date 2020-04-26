@@ -11,6 +11,9 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Playlist element parser
+ */
 class IParser {
 public:
     /**
@@ -36,6 +39,9 @@ public:
     virtual void set_variable_resolver(
       const IVariable_resolver* variable_resolver) = 0;
 
+    /**
+     * @brief Destructor
+     */
     virtual ~IParser() = default;
 };
 

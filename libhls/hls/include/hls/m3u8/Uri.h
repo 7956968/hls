@@ -9,6 +9,9 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Uri playlist element
+ */
 class Uri : public AElement {
 public:
     Uri(const std::string& uri, const IVariable_resolver* variable_resolver)
@@ -18,9 +21,15 @@ public:
         }
     }
 
+    /**
+     * @brief Raw uri
+     */
     const std::string& uri() const { return m_uri; }
 
 private:
+    /**
+     * @brief See Uri::uri
+     */
     std::string m_uri;
 };
 

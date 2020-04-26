@@ -6,8 +6,14 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Playlist element base class
+ */
 class AElement {
 public:
+    /**
+     * @brief Element type
+     */
     enum class Type { comment, tag, uri, unknown };
 
 public:
@@ -15,9 +21,15 @@ public:
 
     virtual ~AElement() = default;
 
+    /**
+     * @brief Element type
+     */
     Type type() const { return m_type; }
 
 private:
+    /**
+     * @brief See AElement::type
+     */
     Type m_type;
 };
 

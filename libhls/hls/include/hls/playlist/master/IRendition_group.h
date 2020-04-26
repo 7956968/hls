@@ -31,6 +31,9 @@ public:
      */
     virtual std::vector<const m3u8::Media_tag*> tags() const = 0;
 
+    /**
+     * @brief Desctructor
+     */
     virtual ~IRendition_group() = default;
 };
 

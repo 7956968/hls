@@ -14,7 +14,6 @@ std::function<Attribute_list::Bool_enum(const std::string&)>
         name);
   }};
 
-
 Attribute_list::Attribute_list(const std::string& input,
                                const IVariable_resolver* variable_resolver)
     : m_fields{parse(input, variable_resolver)} {}

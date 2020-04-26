@@ -205,6 +205,7 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Define_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Variable_resolver.cpp
     ${LIB_ROOT}/hls/source/playlist/media/Parser.cpp
+    ${LIB_ROOT}/hls/source/playlist/master/Parser.cpp
 )
 
 include_directories(

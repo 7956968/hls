@@ -11,18 +11,35 @@
 namespace hls {
 namespace m3u8 {
 
+/**
+ * @brief Attribute list container  which models Attribute Lists specified in
+ * RFC8216b/4.2
+ */
 class Attribute_list {
 public:
+    /**
+     * @brief Helper boolean enum, used to parse YES/NO attribute values
+     */
     enum class Bool_enum { yes, no };
 
+    /**
+     * @brief Resolution type (width/height)
+     */
     using Resolution = std::pair<long, long>;
 
+    /**
+     * @brief String enumeration
+     *
+     */
     struct String_enum {
         std::string value;
 
         explicit String_enum(const std::string& value) : value{value} {}
     };
 
+    /**
+     * @brief Field variant
+     */
     using Variant_t =
       mpark::variant<long long, float, std::string, Resolution, String_enum>;
 
@@ -34,6 +51,10 @@ public:
     static constexpr gsl::index k_variant_resolution_i{3};
     static constexpr gsl::index k_variant_enum_string_i{4};
 
+    /**
+     * @brief Error which indicates that a field with this name doesn't exist
+     *
+     */
     struct No_such_field_error : public Error {
         using Error::Error;
     };
@@ -49,13 +70,31 @@ public:
     explicit Attribute_list(const std::string& input,
                             const IVariable_resolver* variable_resolver);
 
+    /**
+     * @brief Get a field
+     *
+     * @param name Field name
+     * @return Variant object
+     */
     Variant_t get(const std::string& name) const;
 
+    /**
+     * @brief Get a field of given type
+     *
+     * @tparam T Field type
+     * @param name  Field name
+     * @return field value
+     */
     template<typename T>
     T get(const std::string& name) const {
         return mpark::get<T>(get(name));
     }
 
+    /**
+     * @brief Get a boolean field value
+     *
+     * @param name Field name
+     */
     template<>
     bool get(const std::string& name) const {
         switch (get_parsed_enum_string(s_bool_parser, name)) {
@@ -66,6 +105,13 @@ public:
         }
     }
 
+    /**
+     * @brief Get a parsed enum field value
+     *
+     * @tparam T Enum type class
+     * @param parser Enum parser
+     * @param name Field name
+     */
     template<typename T>
     T get_parsed_enum_string(std::function<T(const std::string& name)>& parser,
                              const std::string& name) const {
@@ -74,9 +120,20 @@ public:
         return parser(raw);
     }
 
+    /**
+     * @brief Get delimiter separated string field value
+     *
+     * @param name Field name
+     * @param delim Delimiter
+     */
     std::vector<std::string> get_delim_separated_string(
       const std::string& name, const std::string& delim) const;
 
+    /**
+     * @brief Checks if field with given name exists
+     *
+     * @param name Field name
+     */
     bool contains(const std::string& name) const;
 
 private:
@@ -91,8 +148,15 @@ private:
                              const IVariable_resolver* variable_resolver);
 
 private:
+    /**
+     * @brief Fields
+     */
     Container_t m_fields;
 
+private:
+    /**
+     * @brief Enum string parser (parses YES/NO values)
+     */
     static std::function<Bool_enum(const std::string&)> s_bool_parser;
 };
 
