@@ -20,7 +20,8 @@ public:
     /**
      * @brief Constructor
      */
-    explicit Start_tag(const std::string& value);
+    explicit Start_tag(const std::string& value,
+                       const IVariable_resolver* variable_resolver);
 
     /**
      * @brief The value of TIME-OFFSET is a signed-decimal-floating-point number

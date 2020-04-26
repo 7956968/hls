@@ -2,6 +2,7 @@
 #define HLS_M3U8ATTRIBUTELIST_H_
 
 #include "hls/Common.h"
+#include "hls/m3u8/IVariable_resolver.h"
 
 #include <regex>
 #include <unordered_map>
@@ -38,7 +39,15 @@ public:
     };
 
 public:
-    explicit Attribute_list(const std::string& input);
+    /**
+     * @brief Constructor
+     *
+     * @param input Raw input string
+     * @param variable_resolver Used to resolve any possible variables in quoted
+     * string fields
+     */
+    explicit Attribute_list(const std::string& input,
+                            const IVariable_resolver* variable_resolver);
 
     Variant_t get(const std::string& name) const;
 
@@ -74,9 +83,12 @@ private:
     /**
      * @brief Parse a raw input string
      *
-     * @param input
+     * @param input Raw input string
+     * @param variable_resolver Used to resolve variables that are defined in
+     * certain elements
      */
-    static Container_t parse(const std::string& input);
+    static Container_t parse(const std::string& input,
+                             const IVariable_resolver* variable_resolver);
 
 private:
     Container_t m_fields;

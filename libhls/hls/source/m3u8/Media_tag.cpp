@@ -33,8 +33,10 @@ std::function<Media_tag::Media_type(const std::string&)>
         name);
   }};
 
-Media_tag::Media_tag(const std::string& value) : Tag{Tag::Tag_type::x_media} {
-    const Attribute_list al{value};
+Media_tag::Media_tag(const std::string& value,
+                     const IVariable_resolver* variable_resolver)
+    : Tag{Tag::Tag_type::x_media} {
+    const Attribute_list al{value, variable_resolver};
 
     // Mandatory attributes
     m_media_type = al.get_parsed_enum_string(s_media_type_parser, k_attr_type);

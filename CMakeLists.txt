@@ -202,6 +202,8 @@ set(HLS_SOURCE_FILES
     ${LIB_ROOT}/hls/source/m3u8/Map_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Key_tag.cpp
     ${LIB_ROOT}/hls/source/m3u8/Start_tag.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Define_tag.cpp
+    ${LIB_ROOT}/hls/source/m3u8/Variable_resolver.cpp
     ${LIB_ROOT}/hls/source/playlist/media/Parser.cpp
 )
 
@@ -226,7 +228,7 @@ TARGET_LINK_LIBRARIES(hls
 set(HLS_TEST_SOURCES
     ${LIB_ROOT}/test/source/main.cpp
     ${LIB_ROOT}/test/source/TestParser.cpp
-    ${LIB_ROOT}/test/source/TestM3u8AttributeList.cpp
+    ${LIB_ROOT}/test/source/TestAttributeList.cpp
     ${LIB_ROOT}/test/source/TestStreamInfTag.cpp
     ${LIB_ROOT}/test/source/TestTags.cpp
     ${LIB_ROOT}/test/source/TestMediaTag.cpp
@@ -234,6 +236,7 @@ set(HLS_TEST_SOURCES
     ${LIB_ROOT}/test/source/TestMasterPlaylist.cpp
     ${LIB_ROOT}/test/source/TestMediaPlaylist.cpp
     ${LIB_ROOT}/test/source/TestKeyTag.cpp
+    ${LIB_ROOT}/test/source/TestVariableResolver.cpp
 )
 
 include_directories("${LIB_ROOT}/test/include")

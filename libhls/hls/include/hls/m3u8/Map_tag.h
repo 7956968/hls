@@ -19,7 +19,8 @@ namespace m3u8 {
  */
 class Map_tag : public Tag {
 public:
-    explicit Map_tag(const std::string& value);
+    explicit Map_tag(const std::string& value,
+                     const IVariable_resolver* variable_resolver);
 
     /**
      * @brief The value is a quoted-string containing a URI that identifies a

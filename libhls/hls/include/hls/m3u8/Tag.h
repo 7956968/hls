@@ -3,6 +3,7 @@
 
 #include "hls/Common.h"
 #include "hls/m3u8/AElement.h"
+#include "hls/m3u8/IVariable_resolver.h"
 
 namespace hls {
 namespace m3u8 {

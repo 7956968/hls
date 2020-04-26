@@ -1,5 +1,6 @@
 #include "hls/m3u8/Byte_range.h"
 #include "hls/m3u8/Common.h"
+#include "hls/m3u8/Define_tag.h"
 #include "hls/m3u8/Enum_tag.h"
 #include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
@@ -63,25 +64,27 @@ TEST_F(TestTags, EnumTag) {
 }
 
 TEST_F(TestTags, InfTag) {
-    EXPECT_DOUBLE_EQ(5, hls::m3u8::Inf_tag{"5"}.duration());
+    EXPECT_DOUBLE_EQ(5, hls::m3u8::Inf_tag("5", nullptr).duration());
 
-    EXPECT_DOUBLE_EQ(5.45, hls::m3u8::Inf_tag{"5.45"}.duration());
+    EXPECT_DOUBLE_EQ(5.45, hls::m3u8::Inf_tag("5.45", nullptr).duration());
 
-    EXPECT_THROW(hls::m3u8::Inf_tag{""}.duration(), hls::Parse_error);
-    EXPECT_THROW(hls::m3u8::Inf_tag{"asdf"}.duration(), hls::Parse_error);
-    EXPECT_THROW(hls::m3u8::Inf_tag{",title"}.duration(), hls::Parse_error);
+    EXPECT_THROW(hls::m3u8::Inf_tag("", nullptr).duration(), hls::Parse_error);
+    EXPECT_THROW(hls::m3u8::Inf_tag("asdf", nullptr).duration(),
+                 hls::Parse_error);
+    EXPECT_THROW(hls::m3u8::Inf_tag(",title", nullptr).duration(),
+                 hls::Parse_error);
 
-    EXPECT_DOUBLE_EQ(5, hls::m3u8::Inf_tag{"5,"}.duration());
+    EXPECT_DOUBLE_EQ(5, hls::m3u8::Inf_tag("5,", nullptr).duration());
 
     {
-        hls::m3u8::Inf_tag tag{"5,title"};
+        hls::m3u8::Inf_tag tag{"5,title", nullptr};
 
         EXPECT_DOUBLE_EQ(tag.duration(), 5);
         EXPECT_EQ("title"s, tag.title().value());
     }
 
     {
-        hls::m3u8::Inf_tag tag{"5,"};
+        hls::m3u8::Inf_tag tag{"5,", nullptr};
 
         EXPECT_DOUBLE_EQ(tag.duration(), 5);
         EXPECT_EQ(""s, tag.title().value());
@@ -117,16 +120,17 @@ TEST_F(TestTags, ByteRange) {
 }
 
 TEST_F(TestTags, MapTag) {
-    ASSERT_ANY_THROW(hls::m3u8::Map_tag{""});
+    ASSERT_ANY_THROW(hls::m3u8::Map_tag("", nullptr));
 
     {
-        hls::m3u8::Map_tag tag{"URI=\"http://test\""};
+        hls::m3u8::Map_tag tag{"URI=\"http://test\"", nullptr};
         ASSERT_EQ(tag.uri(), "http://test");
         ASSERT_FALSE(tag.byte_range().has_value());
     }
 
     {
-        hls::m3u8::Map_tag tag{"URI=\"http://test\",BYTERANGE=\"1234@52\""};
+        hls::m3u8::Map_tag tag{"URI=\"http://test\",BYTERANGE=\"1234@52\"",
+                               nullptr};
         ASSERT_EQ(tag.uri(), "http://test");
         ASSERT_EQ(tag.byte_range().value().length(), 1234);
         ASSERT_EQ(tag.byte_range().value().start_byte(), 52);
@@ -134,23 +138,43 @@ TEST_F(TestTags, MapTag) {
 }
 
 TEST_F(TestTags, StartTag) {
-    ASSERT_ANY_THROW(hls::m3u8::Start_tag{""});
+    ASSERT_ANY_THROW(hls::m3u8::Start_tag("", nullptr));
 
     {
-        hls::m3u8::Start_tag tag{"TIME-OFFSET=12345.35"};
+        hls::m3u8::Start_tag tag("TIME-OFFSET=12345.35", nullptr);
         ASSERT_FALSE(tag.precise());
         ASSERT_FLOAT_EQ(12345.35, tag.time_offset());
     }
 
     {
-        hls::m3u8::Start_tag tag{"TIME-OFFSET=-42.45"};
+        hls::m3u8::Start_tag tag("TIME-OFFSET=-42.45", nullptr);
         ASSERT_FALSE(tag.precise());
         ASSERT_FLOAT_EQ(-42.45, tag.time_offset());
     }
 
     {
-        hls::m3u8::Start_tag tag{"TIME-OFFSET=-42.45,PRECISE=YES"};
+        hls::m3u8::Start_tag tag("TIME-OFFSET=-42.45,PRECISE=YES", nullptr);
         ASSERT_TRUE(tag.precise());
         ASSERT_FLOAT_EQ(-42.45, tag.time_offset());
+    }
+}
+
+TEST_F(TestTags, DefineTag) {
+    ASSERT_ANY_THROW(hls::m3u8::Define_tag("", nullptr));
+
+    ASSERT_ANY_THROW(hls::m3u8::Define_tag("NAME=\"name\"", nullptr));
+
+    {
+        hls::m3u8::Define_tag tag{"NAME=\"name\",VALUE=\"value\"", nullptr};
+        ASSERT_EQ(tag.name().value(), "name"s);
+        ASSERT_EQ(tag.value().value(), "value"s);
+        ASSERT_FALSE(tag.import_name());
+    }
+
+    {
+        hls::m3u8::Define_tag tag{"IMPORT=\"import\"", nullptr};
+        ASSERT_EQ(tag.import_name().value(), "import"s);
+        ASSERT_FALSE(tag.name());
+        ASSERT_FALSE(tag.value());
     }
 }

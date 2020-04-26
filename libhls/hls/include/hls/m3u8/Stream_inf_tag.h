@@ -22,7 +22,8 @@ public:
     enum class Video_range { sdr, pq };
 
 public:
-    Stream_inf_tag(const std::string& value);
+    Stream_inf_tag(const std::string& value,
+                   const IVariable_resolver* variable_resolver);
 
     /**
      * @brief The value is a decimal-integer of bits per second. It represents

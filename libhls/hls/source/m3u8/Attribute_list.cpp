@@ -15,8 +15,9 @@ std::function<Attribute_list::Bool_enum(const std::string&)>
   }};
 
 
-Attribute_list::Attribute_list(const std::string& input)
-    : m_fields{parse(input)} {}
+Attribute_list::Attribute_list(const std::string& input,
+                               const IVariable_resolver* variable_resolver)
+    : m_fields{parse(input, variable_resolver)} {}
 
 Attribute_list::Variant_t Attribute_list::get(const std::string& name) const {
     auto fields_iter{m_fields.find(name)};
@@ -27,7 +28,8 @@ Attribute_list::Variant_t Attribute_list::get(const std::string& name) const {
     return fields_iter->second;
 }
 
-Attribute_list::Container_t Attribute_list::parse(const std::string& input) {
+Attribute_list::Container_t Attribute_list::parse(
+  const std::string& input, const IVariable_resolver* variable_resolver) {
     Container_t fields;
 
     std::string raw{input};
@@ -58,10 +60,15 @@ Attribute_list::Container_t Attribute_list::parse(const std::string& input) {
             Expects(closing_quotes_pos != std::string::npos,
                     Error{"Could not find closing quotes: '"s + raw + "'"s});
 
-            const std::string value{raw.substr(0, closing_quotes_pos)};
+            std::string value{raw.substr(0, closing_quotes_pos)};
 
             // Remove the value along with the closing quotes
             raw = raw.substr(closing_quotes_pos + 1);
+
+            // Resolve any variables that happen to be in this value
+            if (variable_resolver) {
+                variable_resolver->resolve_variables(&value);
+            }
 
             fields.insert({attr_name, value});
             continue;
@@ -70,11 +77,9 @@ Attribute_list::Container_t Attribute_list::parse(const std::string& input) {
         // Find the comma which separates us from the next attribute
         const size_t comma_pos{raw.find(',')};
 
-
         // If there's no comma, this should be the last one
         const size_t separator_pos{comma_pos == std::string::npos ? raw.size()
                                                                   : comma_pos};
-
         // Extract raw value
         const std::string value{raw.substr(0, separator_pos)};
         raw = raw.substr(separator_pos);

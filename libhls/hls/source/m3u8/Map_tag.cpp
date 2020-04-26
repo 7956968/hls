@@ -10,8 +10,10 @@ constexpr auto k_attr_byte_range{"BYTERANGE"};
 namespace hls {
 namespace m3u8 {
 
-Map_tag::Map_tag(const std::string& value) : Tag{Tag_type::x_map} {
-    const Attribute_list al{value};
+Map_tag::Map_tag(const std::string& value,
+                 const IVariable_resolver* variable_resolver)
+    : Tag{Tag_type::x_map} {
+    const Attribute_list al{value, variable_resolver};
 
     m_uri = al.get<std::string>(k_attr_uri);
 

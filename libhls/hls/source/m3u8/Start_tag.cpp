@@ -11,8 +11,10 @@ namespace hls {
 namespace m3u8 {
 
 
-Start_tag::Start_tag(const std::string& value) : Tag{Tag::Tag_type::x_start} {
-    const Attribute_list al{value};
+Start_tag::Start_tag(const std::string& value,
+                     const IVariable_resolver* variable_resolver)
+    : Tag{Tag::Tag_type::x_start} {
+    const Attribute_list al{value, variable_resolver};
 
     m_time_offset = al.get<float>(k_attr_time_offset);
 

@@ -15,7 +15,8 @@ namespace m3u8 {
  */
 class Inf_tag : public Tag {
 public:
-    explicit Inf_tag(const std::string& value);
+    explicit Inf_tag(const std::string& value,
+                     const IVariable_resolver* variable_resolver);
 
     /**
      * @brief Durations SHOULD be decimal-floating-

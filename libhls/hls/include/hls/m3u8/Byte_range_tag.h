@@ -19,7 +19,7 @@ namespace m3u8 {
  */
 class Byte_range_tag : public Tag {
 public:
-    Byte_range_tag(const std::string& value)
+    Byte_range_tag(const std::string& value, const IVariable_resolver*)
         : Tag{Tag_type::x_byte_range}, m_range{value} {}
 
     const Byte_range& byte_range() const { return m_range; }

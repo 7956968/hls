@@ -5,7 +5,8 @@
 namespace hls {
 namespace m3u8 {
 
-Inf_tag::Inf_tag(const std::string& value) : Tag{Tag_type::inf} {
+Inf_tag::Inf_tag(const std::string& value, const IVariable_resolver*)
+    : Tag{Tag_type::inf} {
     std::vector<std::string> tokens;
     iwu::String_utils::split(value, ",", tokens);
 

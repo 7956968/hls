@@ -38,9 +38,10 @@ std::function<Stream_inf_tag::Video_range(const std::string&)>
         name);
   }};
 
-Stream_inf_tag::Stream_inf_tag(const std::string& value)
+Stream_inf_tag::Stream_inf_tag(const std::string& value,
+                               const IVariable_resolver* variable_resolver)
     : Tag{Tag::Tag_type::x_stream_inf} {
-    const Attribute_list al{value};
+    const Attribute_list al{value, variable_resolver};
 
     // Every EXT-X-STREAM-INF tag MUST include the BANDWIDTH attribute (source
     // rfc8216)

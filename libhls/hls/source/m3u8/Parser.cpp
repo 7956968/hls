@@ -2,6 +2,7 @@
 #include "hls/Common.h"
 #include "hls/m3u8/Byte_range_tag.h"
 #include "hls/m3u8/Comment.h"
+#include "hls/m3u8/Define_tag.h"
 #include "hls/m3u8/Inf_tag.h"
 #include "hls/m3u8/Integer_tag.h"
 #include "hls/m3u8/Key_tag.h"
@@ -74,8 +75,8 @@ Parser::Parser() {
                       Tag::Tag_type::x_independent_segments)
       .register_specialized_tag_type<Start_tag>("-X-START",
                                                 Tag::Tag_type::x_start)
-      // TODO Parse properly
-      .register_tag_type("-X-DEFINE", Tag::Tag_type::x_define);
+      .register_specialized_tag_type<Define_tag>("-X-DEFINE",
+                                                 Tag::Tag_type::x_define);
 }
 
 std::unique_ptr<const AElement> Parser::parse_line(const std::string& in_line) {
@@ -98,7 +99,7 @@ std::unique_ptr<const AElement> Parser::parse_line(const std::string& in_line) {
         return std::make_unique<Comment>(line.substr(1));
     } else {
         // Uri
-        return std::make_unique<Uri>(line);
+        return std::make_unique<Uri>(line, m_variable_resolver);
     }
 }
 
@@ -147,12 +148,45 @@ std::unique_ptr<Tag> Parser::parse_tag(const std::string& in_line) {
             Error("Unsupported tag: '"s + tag_name + "'"s));
 
     const Tag_entry& entry{tag_iter->second};
+
+
+    std::unique_ptr<Tag> tag;
+
     // Parse if needed
     if (entry.parser) {
-        return entry.parser(line);
+        tag = entry.parser(line);
+    } else {
+        tag = std::make_unique<Tag>(entry.type);
     }
 
-    return std::make_unique<Tag>(entry.type);
+    if (tag->type() == Tag::Tag_type::x_define) {
+        Expects(m_variable_repository,
+                Error{"Encountered an EXT-X-DEFINE tag, but variable "
+                      "repository not set"});
+
+        auto define_tag{dynamic_cast<const Define_tag*>(tag.get())};
+
+        if (define_tag->name()) {
+            // Define a new variable
+            m_variable_repository->define_variable(define_tag->name().value(),
+                                                   define_tag->value().value());
+        } else if (define_tag->import_name()) {
+            // Import the variable from master list
+            m_variable_repository->import_variable(
+              define_tag->import_name().value());
+        }
+    }
+
+    return tag;
+}
+
+void Parser::set_variable_repository(IVariable_repository* repository) {
+    m_variable_repository = repository;
+}
+
+void Parser::set_variable_resolver(
+  const IVariable_resolver* variable_resolver) {
+    m_variable_resolver = variable_resolver;
 }
 
 } // namespace m3u8

@@ -23,8 +23,10 @@ std::function<Key_tag::Method(const std::string&)> Key_tag::s_method_parser{
         name);
   }};
 
-Key_tag::Key_tag(const std::string& value) : Tag{Tag::Tag_type::x_key} {
-    const Attribute_list al{value};
+Key_tag::Key_tag(const std::string& value,
+                 const IVariable_resolver* variable_resolver)
+    : Tag{Tag::Tag_type::x_key} {
+    const Attribute_list al{value, variable_resolver};
 
     // Mandatory method
     m_method = al.get_parsed_enum_string(s_method_parser, k_attr_method);

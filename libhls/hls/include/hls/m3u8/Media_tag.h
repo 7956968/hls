@@ -20,7 +20,8 @@ class Media_tag : public Tag {
 public:
     enum class Media_type { audio, video, subtitles, closed_captions };
 
-    explicit Media_tag(const std::string& value);
+    explicit Media_tag(const std::string& value,
+                       const IVariable_resolver* variable_resolver);
 
     /**
      * @brief Media Media_type

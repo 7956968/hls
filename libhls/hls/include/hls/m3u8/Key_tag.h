@@ -58,7 +58,8 @@ public:
     /**
      * @brief Constructor
      */
-    explicit Key_tag(const std::string& value);
+    explicit Key_tag(const std::string& value,
+                     const IVariable_resolver* variable_resolver);
 
     /**
      * @brief Encryption method. See Key_tag::Method
