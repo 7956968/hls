@@ -1,0 +1,49 @@
+@startuml
+
+
+
+interface ILine_reader {
+    Provides an interface trough which the client may
+    read raw string lines one by one
+    --
+    +std::string read_line()
+}
+
+interface IElement_stream {
+    Provides an interface through which the user of
+    the m3u8 package may read playlist elements one by one
+    ---
+    +AElement get_next()
+}
+
+interface IParser {
+    Provides an interface for parsing raw strings into playlist elements
+    ---
+    +AElement parse_line(std::string line)
+}
+
+class Parser {
+    Default parser implementation. Contains all the logic for
+    parsing of the individual playlist tags
+}
+
+class Parser_element_stream {
+    Default parse element stream implementation. Uses a **ILine_reader** as raw string
+    input and parses said strings using **IParser** until EOF is reached.
+}
+
+class String_line_reader {
+    Splits a string buffer into lines. The string buffer may come from
+    various places such as from downloading an .m3u8 file
+}
+
+ILine_reader <.. String_line_reader
+
+IElement_stream <.. Parser_element_stream
+
+Parser_element_stream *-- ILine_reader
+Parser_element_stream *-- IParser
+
+IParser <.. Parser
+
+@enduml

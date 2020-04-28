@@ -1,0 +1,93 @@
+@startuml
+
+class AElement {
+    Base class for all elements of the playlist
+}
+
+class Comment {
+    Comment playlist element
+    Usually discarded
+}
+
+class Tag {
+    Tag playlist element
+    This is a base class for all the playlist elements which start
+    with **#EXT-...**
+}
+
+class Uri {
+    URI element
+    For example may hold URL of a media
+    segment or a playlist
+}
+
+class Attribute_list {
+    Attribute list parser. Used to parse tag
+    attribute lists which are essentially key/value maps
+
+    More complex tags use it in order to extract their fields
+}
+
+class Inf_tag {
+    **#EXT-X-INF** tag
+    ---
+    +double get_duration()
+    +std::string get_title()
+}
+
+class Media_tag {
+    **#EXT-X-MEDIA** tag
+    ---
+    +std::string get_uri()
+    +std::string get_group_id()
+    +std::string get_name()
+    ...
+}
+
+class Key_tag {
+    **#EXT-X-KEY** tag
+    ---
+    +Method get_method()
+    +Method get_uri()
+    +Method get_iv()
+    ...
+}
+
+class Integer_tag {
+    Generic integer tag
+
+    All the tags which just contain a single
+    integer value are parsed using it.
+    For example **#EXT-X-TARGETDURATION**
+}
+
+class Enum_tag {
+    Generic enum tag
+
+    All the tags which just contain a single
+    enum value are parsed to it
+
+    For example **#EXT-X-PLAYLIST-TYPE**
+}
+
+AElement <.. Comment
+AElement <.. Uri
+AElement <.. Tag
+
+Tag <-- Integer_tag
+Tag <-- Enum_tag
+
+
+
+Tag <.. Inf_tag
+Tag <.. Media_tag
+Tag <.. Key_tag
+
+Inf_tag -down-> Attribute_list
+Media_tag -down-> Attribute_list
+
+Key_tag -down-> Attribute_list
+
+
+
+@enduml

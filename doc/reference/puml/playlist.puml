@@ -1,0 +1,73 @@
+@startuml
+
+
+class APlaylist {
+    Base class for both master and media playlists
+    Contains shared attributes
+    ---
+    #std::string uri
+    #bool independent_segments
+    #std::chrono::nanoseconds time_offset
+    #bool precise
+    ...
+}
+
+class media::Playlist {
+    Media playlist, which holds a list of playable segments
+    ---
+    #std::vector<media::Segment> segments
+    #Playlist_type type
+    #bool is_iframes_only
+    #std::chrono::nanoseconds target_duration
+    ...
+}
+
+class Rendition_group {
+    Container for a set of oone or more media tags of the same group ID
+    For example this group may contains 3 audio streams in different
+    languages
+    ---
+    #std::string group_id
+    #Media_type media_type
+    #Media_tag tags
+    ...
+}
+
+class Variant_stream {
+    A logical set of renditions which can be combined to play a representation
+    ---
+    #std::string uri
+    #m3u8::Stream_inf_tag stream_inf
+    #std::vector<Rendition_group> rendition_groups
+}
+
+class master::Playlist {
+    Master playlist which defines all the variants and rendition
+    groups. This list also points us to all available media lists, and its
+    the entry point of any stream
+    ---
+    # std::vector<Variant_stream> variants
+}
+
+master::Playlist *.down. Variant_stream
+
+Variant_stream *-- Rendition_group
+
+class media::Segment {
+    Object representing a single segment from the media playlist
+    ---
+    #std::string uri
+    #long sequence_number
+    #long discontinuity_sequence_number
+    #std::tring title
+    #bool is_gap
+    ...
+}
+
+APlaylist <.. media::Playlist
+
+APlaylist <.. master::Playlist
+
+media::Playlist *-- media::Segment
+
+@enduml
